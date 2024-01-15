@@ -5,7 +5,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -20,17 +19,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -50,11 +45,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -62,7 +55,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -70,6 +62,7 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cc221042.shutterscout.Place
+import com.cc221042.shutterscout.ui.screens.HomeScreen
 import kotlinx.coroutines.delay
 
 sealed class Screen(val route: String) {
@@ -119,12 +112,12 @@ fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, 
         }
         composable(Screen.Second.route) {
             NavigationLogic(mainViewModel, Screen.Second) {
-                AddPlaceScreen(mainViewModel)
+                HomeScreen(mainViewModel)
             }
         }
         composable(Screen.Third.route) {
             NavigationLogic(mainViewModel, Screen.Third) {
-                AddPlaceScreen(mainViewModel)
+                HomeScreen(mainViewModel)
             }
         }
     }
@@ -152,63 +145,8 @@ fun BottomNavigationBar(navController: NavHostController, selectedScreen: Bottom
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPlaceScreen(mainViewModel: MainViewModel) {
-    var title by rememberSaveable { mutableStateOf("") }
-    var imageUri by rememberSaveable { mutableStateOf("") }
-    var saveSuccess by remember { mutableStateOf(false) }
-
-    val photoPicker = setupPhotoPicker { uri ->
-        imageUri = uri.toString()
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Culinary Canvas", fontSize = 50.sp, style = TextStyle(fontFamily = FontFamily.Cursive))
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        TextField(
-            value = title,
-            onValueChange = { newText -> title = newText },
-            label = { Text("Title of your place") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-            modifier = Modifier.padding(top = 10.dp)
-        ) {
-            Text("Open Gallery", fontSize = 20.sp)
-        }
-
-        Button(
-            onClick = {
-                mainViewModel.save(Place(title, imageUri))
-                saveSuccess = true // Update the state to reflect save success
-            },
-            modifier = Modifier.padding(top = 15.dp),
-            enabled = title.isNotBlank() && imageUri.isNotBlank()
-        ) {
-            Text("Save", fontSize = 20.sp)
-        }
-
-        if (saveSuccess) {
-            Text("Place saved successfully!", color = Color.Green)
-        }
-    }
-}
-
-@Composable
-private fun setupPhotoPicker(onImagePicked: (Uri) -> Unit): ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> {
+fun setupPhotoPicker(onImagePicked: (Uri) -> Unit): ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> {
     val context = LocalContext.current
     return rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -336,6 +274,7 @@ fun EditPlaceModal(mainViewModel: MainViewModel) {
     if (state.value.openDialog) {
         val place = mainViewModel.placeState.collectAsState().value
         var title by rememberSaveable { mutableStateOf(place.title) }
+        var condition by rememberSaveable { mutableStateOf(place.condition) }
         var imageUri by rememberSaveable { mutableStateOf(place.imageUri ?: "") }
         val context = LocalContext.current
         val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -373,7 +312,7 @@ fun EditPlaceModal(mainViewModel: MainViewModel) {
             },
             confirmButton = {
                 Button(onClick = {
-                    mainViewModel.updatePlace(Place(title, imageUri, place.id))
+                    mainViewModel.updatePlace(Place(title, condition, imageUri, place.id))
                     Log.d("duck", "confirm button clicked")
                 }) {
                     Text("Confirm")
