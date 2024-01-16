@@ -1,5 +1,6 @@
 package com.cc221042.shutterscout.ui.screens
 
+import android.net.Uri
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -29,10 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cc221042.shutterscout.Place
 import com.cc221042.shutterscout.ui.MainViewModel
-import com.cc221042.shutterscout.ui.setupPhotoPicker
+import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(mainViewModel: MainViewModel) {
     var title by rememberSaveable { mutableStateOf("") }
@@ -40,7 +38,7 @@ fun HomeScreen(mainViewModel: MainViewModel) {
     var imageUri by rememberSaveable { mutableStateOf("") }
     var saveSuccess by remember { mutableStateOf(false) }
 
-    val photoPicker = setupPhotoPicker { uri ->
+    val photoPicker = setupPhotoPicker { uri: Uri ->
         imageUri = uri.toString()
     }
 
@@ -63,7 +61,7 @@ fun HomeScreen(mainViewModel: MainViewModel) {
         TextField(
             value = condition,
             onValueChange = { newText -> condition = newText },
-            label = { Text("WeatherScreen condition") }
+            label = { Text("Condition of your place") }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -81,7 +79,7 @@ fun HomeScreen(mainViewModel: MainViewModel) {
                 saveSuccess = true // Update the state to reflect save success
             },
             modifier = Modifier.padding(top = 15.dp),
-            enabled = title.isNotBlank() && imageUri.isNotBlank()
+            enabled = title.isNotBlank() && condition.isNotBlank()
         ) {
             Text("Save", fontSize = 20.sp)
         }
