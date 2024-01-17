@@ -23,7 +23,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cc221042.shutterscout.ui.screens.HomeScreen
 import com.cc221042.shutterscout.ui.screens.PlacesScreen
-import com.cc221042.shutterscout.ui.screens.WeatherScreen
+import com.cc221042.shutterscout.ui.screens.WeatherDisplay
+
 
 sealed class Screen(val route: String) {
     object First : Screen("first")
@@ -39,7 +40,7 @@ enum class BottomNavScreen(val route: String, val icon: ImageVector, val content
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainView(mainViewModel: MainViewModel) {
+fun MainView(mainViewModel: MainViewModel, viewModel: WeatherViewModel) {
     val state = mainViewModel.mainViewState.collectAsState()
     val navController = rememberNavController()
 
@@ -53,12 +54,11 @@ fun MainView(mainViewModel: MainViewModel) {
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController, selectedBottomNavScreen) }
-    ) { innerPadding -> MainNavHost(navController, mainViewModel, innerPadding) }
+    ) { innerPadding -> MainNavHost(navController, mainViewModel, innerPadding, viewModel) }
 }
 
-
 @Composable
-fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, innerPadding: PaddingValues) {
+fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, innerPadding: PaddingValues, viewModel: WeatherViewModel) {
     NavHost(
         navController = navController,
         modifier = Modifier.padding(innerPadding),
@@ -76,7 +76,7 @@ fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, 
         }
         composable(Screen.Third.route) {
             NavigationLogic(mainViewModel, Screen.Third) {
-                WeatherScreen()
+                WeatherDisplay(viewModel)
             }
         }
     }
