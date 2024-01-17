@@ -1,10 +1,10 @@
 package com.cc221042.shutterscout.data
 
-data class CurrentWeather(
+data class WeatherCurrentWeather(
     val icon: String,
     val icon_num: Int,
     val summary: String,
     val temperature: Double,
-    val precipitation: Precipitation,
+    val weatherPrecipitation: WeatherPrecipitation,
     val cloud_cover: Int
 )

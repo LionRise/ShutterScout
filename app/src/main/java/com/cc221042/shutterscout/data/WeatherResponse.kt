@@ -6,7 +6,7 @@ data class WeatherResponse(
     val elevation: Int,
     val timezone: String,
     val units: String,
-    val current: CurrentWeather,
-    val hourly: HourlyForecast,
+    val current: WeatherCurrentWeather,
+    val hourly: WeatherHourlyForecast,
     //val daily: DailyForecast? // Assuming daily can be null
 )

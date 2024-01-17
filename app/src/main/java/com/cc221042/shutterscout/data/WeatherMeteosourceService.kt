@@ -5,27 +5,28 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 // Define an interface for the Meteosource API endpoints
-interface MeteosourceService {
+interface WeatherMeteosourceService {
 
     // Example endpoint to get weather data, adjust the endpoint and parameters as needed
-    @GET("get_weather")
+    @GET("v1/free/point")
     suspend fun getWeather(
-        @Query("latitude") latitude: Double,
-        @Query("longitude") longitude: Double,
-        @Query("token") apiToken: String
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
+        @Query("sections") sections: String,
+        @Query("key") apiToken: String
     ): WeatherResponse // Replace with your actual data model class
 
     companion object {
         // Base URL of the Meteosource API
-        private const val BASE_URL = "https://www.meteosource.com/api"
+        private const val BASE_URL = "https://www.meteosource.com/api/"
 
         // Function to create an instance of the service
-        fun create(): MeteosourceService {
+        fun create(): WeatherMeteosourceService {
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(MeteosourceService::class.java)
+                .create(WeatherMeteosourceService::class.java)
         }
     }
 }
