@@ -1,4 +1,4 @@
-package com.cc221042.shutterscout.ui.screens
+package com.cc221042.shutterscout.ui.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,8 +53,8 @@ fun HomeScreen(
 //        )
 
         Column (
-             modifier = Modifier
-                 .background(Color.Transparent)
+            modifier = Modifier
+                .background(Color.Transparent)
         ) {
             Box(
                 modifier = Modifier
@@ -77,7 +77,7 @@ fun HomeScreen(
                         fontFamily = FontFamily(Font(R.font.lexend)),
                         fontWeight = FontWeight(400),
                         color = Color(0xFF515151),
-                        ),
+                    ),
                     modifier = Modifier
                         .padding(top=12.dp, start = 12.dp)
                 )

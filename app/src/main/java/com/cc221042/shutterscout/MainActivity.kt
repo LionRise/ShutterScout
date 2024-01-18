@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.cc221042.shutterscout.data.WeatherMeteosourceService
 import com.cc221042.shutterscout.data.WeatherRepository
 import com.cc221042.shutterscout.data.secrets
+import com.cc221042.shutterscout.ui.Screens.HomeScreen
 import com.cc221042.shutterscout.ui.WeatherViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModelFactory
 import com.cc221042.shutterscout.ui.screens.HomeScreen
