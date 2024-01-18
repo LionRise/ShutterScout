@@ -3,6 +3,7 @@ package com.cc221042.shutterscout.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,7 @@ import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModel
 import com.cc221042.shutterscout.ui.composables.AddPlaceButton
 import com.cc221042.shutterscout.ui.composables.HomeGoldenHourBox
+import com.cc221042.shutterscout.ui.composables.HomeSuggestionCard
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
@@ -232,47 +234,37 @@ fun HomeScreen(mainViewModel: MainViewModel = viewModel(), weatherViewModel: Wea
                     )
 
                 }
+
+            // Suggestions box
+            Text(
+                text = "Suggestions",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF515151),
+                ), modifier = Modifier
+                    .padding(top = 20.dp)
+                    .padding(start = 12.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .padding(top=12.dp)
+            ) {
+                Box(Modifier.padding(start = 12.dp)) {}
+                HomeSuggestionCard("Mountains") {}
+                Box(Modifier.padding(start = 12.dp)) {}
+                HomeSuggestionCard("Lake") {""}
+                Box(Modifier.padding(start = 12.dp)) {}
+                HomeSuggestionCard("Lighthouse") {}
             }
 
 
+            }
             }
         }
 
 
 
 
-//enum class Corner {
-//    TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
-//}
-//
-//fun Modifier.gradientBackground(
-//    colors: List<Color>,
-//    cornerRadius: Dp,
-//    startCorner: Corner = Corner.TOP_LEFT,
-//    endCorner: Corner = Corner.BOTTOM_RIGHT
-//) = this.then(
-//    Modifier.drawBehind {
-//        val startOffset = cornerToOffset(size, startCorner)
-//        val endOffset = cornerToOffset(size, endCorner)
-//
-//        // Clip the drawing area to round the corners
-//        clipRect {
-//            drawRoundRect(
-//                brush = Brush.linearGradient(
-//                    colors = colors,
-//                    start = startOffset,
-//                    end = endOffset
-//                ),
-//                size = size,
-//                cornerRadius = CornerRadius(cornerRadius.toPx())
-//            )
-//        }
-//    }
-//)
-//
-//private fun cornerToOffset(size: Size, corner: Corner): Offset = when (corner) {
-//    Corner.TOP_LEFT -> Offset(0f, 0f)
-//    Corner.TOP_RIGHT -> Offset(size.width, 0f)
-//    Corner.BOTTOM_LEFT -> Offset(0f, size.height)
-//    Corner.BOTTOM_RIGHT -> Offset(size.width, size.height)
-//}
