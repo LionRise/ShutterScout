@@ -9,7 +9,7 @@ import com.cc221042.shutterscout.Place
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Data Access Object (DAO) interface for performing CRUD operations on Place entities in the database.
+ * Data Access Object (DAO) interface for performing CRUD operations on Place.kt entities in the database.
  */
 @Dao
 interface PlaceDao {
@@ -66,5 +66,5 @@ interface PlaceDao {
 
     @Query("UPDATE places SET imageUri = :imageUri WHERE id = :id")
     suspend fun updatePlaceImageUri(imageUri: String, id: Int)
-    
+
 }

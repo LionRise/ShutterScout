@@ -1,89 +1,91 @@
-package com.cc221042.shutterscout.ui.Screens
+package com.cc221042.shutterscout.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cc221042.shutterscout.R
+import com.cc221042.shutterscout.Place
+import com.cc221042.shutterscout.ui.MainViewModel
+import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 
 @Composable
-fun HomeScreen(
-){
-    val lexend = FontFamily(Font(R.font.lexend))
+fun HomeScreen(mainViewModel: MainViewModel) {
+    var title by rememberSaveable { mutableStateOf("") }
+    var condition by rememberSaveable { mutableStateOf("") }
+    var imageUri by rememberSaveable { mutableStateOf("") }
+    var saveSuccess by remember { mutableStateOf(false) }
 
-    Box (
-        modifier = Modifier
-            .fillMaxSize() // Fill the entire screen
-            .background(Color(0xFF9E9E9E))
-    ) {
-        val imagePainter = painterResource(id = R.drawable.home_background)
-
-        val imageModifier = Modifier
-            .shadow(
-                elevation = 10.dp,
-                spotColor = Color(0x40000000),
-                ambientColor = Color(0x40000000)
-            )
-            .width(361.dp)
-            .height(120.dp)
-//        Image(
-//            painter = imagePainter,
-//            contentDescription = "Local image",
-//            modifier = imageModifier
-//        )
-
-        Column (
-            modifier = Modifier
-                .background(Color.Transparent)
-        ) {
-            Box(
-                modifier = Modifier
-                    .shadow(
-                        elevation = 10.dp,
-                        spotColor = Color(0x40000000),
-                        ambientColor = Color(0x40000000)
-                    )
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 178.dp)
-                    .height(126.dp)
-                    .background(color = Color(0xFFF6F6F6), shape = RoundedCornerShape(size = 10.dp))
-            ) {
-                Text(
-                    text = "Current weather",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        lineHeight = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.lexend)),
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF515151),
-                    ),
-                    modifier = Modifier
-                        .padding(top=12.dp, start = 12.dp)
-                )
-                Text(text = "")
-            }
-        }
+    val photoPicker = setupPhotoPicker { uri: Uri ->
+        imageUri = uri.toString()
     }
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "ShutterScout", fontSize = 50.sp, style = TextStyle(fontFamily = FontFamily.Cursive))
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+        TextField(
+            value = title,
+            onValueChange = { newText -> title = newText },
+            label = { Text("Title of your place") }
+        )
+        TextField(
+            value = condition,
+            onValueChange = { newText -> condition = newText },
+            label = { Text("Condition of your place") }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+            modifier = Modifier.padding(top = 10.dp)
+        ) {
+            Text("Open Gallery", fontSize = 20.sp)
+        }
+
+        Button(
+            onClick = {
+                mainViewModel.save(Place(title, condition, imageUri))
+                saveSuccess = true // Update the state to reflect save success
+            },
+            modifier = Modifier.padding(top = 15.dp),
+            enabled = title.isNotBlank() && condition.isNotBlank()
+        ) {
+            Text("Save", fontSize = 20.sp)
+        }
+
+        if (saveSuccess) {
+            Text("Place saved successfully!", color = Color.Green)
+        }
+    }
 }
