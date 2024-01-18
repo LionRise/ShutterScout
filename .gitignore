@@ -14,6 +14,7 @@
 .cxx
 local.properties
 /app/src/main/java/com/cc221042/shutterscout/data/secrets.kt
+/app/src/main/res/font/font_awesome.otf
 /.idea/compiler.xml
 /.idea/deploymentTargetDropDown.xml
 /.idea/gradle.xml

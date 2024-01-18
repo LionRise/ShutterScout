@@ -17,10 +17,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.cc221042.shutterscout.ui.composables.AddPlaceButton
 import com.cc221042.shutterscout.ui.screens.HomeScreen
 import com.cc221042.shutterscout.ui.screens.PlacesScreen
 import com.cc221042.shutterscout.ui.screens.WeatherDisplay
@@ -53,7 +55,16 @@ fun MainView(mainViewModel: MainViewModel, viewModel: WeatherViewModel) {
 
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController, selectedBottomNavScreen) }
+        modifier = Modifier
+            .padding(0.dp),
+
+
+        bottomBar = { BottomNavigationBar(navController, selectedBottomNavScreen)
+        },
+        floatingActionButton = { AddPlaceButton {
+
+            }
+        }
     ) { innerPadding -> MainNavHost(navController, mainViewModel, viewModel, innerPadding) }
 }
 

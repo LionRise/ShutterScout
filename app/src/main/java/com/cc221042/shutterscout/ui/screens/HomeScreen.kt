@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -22,20 +23,26 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cc221042.shutterscout.R
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModel
+import com.cc221042.shutterscout.ui.composables.AddPlaceButton
+import com.cc221042.shutterscout.ui.composables.HomeGoldenHourBox
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
@@ -43,18 +50,20 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+
 @Composable
-fun HomeScreen(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel) {
+@Preview
+fun HomeScreen(mainViewModel: MainViewModel = viewModel(), weatherViewModel: WeatherViewModel = viewModel()) {
     val weatherData by weatherViewModel.weatherData.collectAsState()
 
 
         val lexend = FontFamily(Font(R.font.lexend))
 
-        // Weather info box
+        // background color box
         Box(
             modifier = Modifier
                 .fillMaxSize() // Fill the entire screen
-                .background(Color(0xFF9E9E9E))
+                .background(Color(0xFFFFFFFF))
         ) {
             val imagePainter = painterResource(id = R.drawable.home_background)
 
@@ -72,48 +81,53 @@ fun HomeScreen(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel)
 //            modifier = imageModifier
 //        )
 
+            // background image box
+            Box(modifier = Modifier
+                .shadow(
+                    elevation = 10.dp,
+                    spotColor = Color(0x40000000),
+                    ambientColor = Color(0x40000000)
+                )
+
+                .fillMaxWidth()
+                .height(120.dp)
+                .paint(
+                    painter = painterResource(R.drawable.home_background),
+                    contentScale = ContentScale.FillWidth
+                )
+            ) {
+                Text(
+                    text = "ShutterScout",
+                    style = TextStyle(
+                        fontSize = 32.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.migra_extrabold)),
+                        fontWeight = FontWeight(800),
+                        color = Color(0xFFF7F7F7),
+
+                        textAlign = TextAlign.Center,
+                    ),
+                    modifier = Modifier
+                        .padding(start = 12.dp, top = 32.dp)
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .background(Color.Transparent)
             ) {
 
-                Box(
-                    modifier = Modifier
-                        .shadow(
-                            elevation = 10.dp,
-                            spotColor = Color(0x40000000),
-                            ambientColor = Color(0x40000000))
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 80.dp)
-                        .height(78.dp)
-                        //.gradientBackground(listOf(Color.Red, Color.Green), angle = 45f, 10.dp)
-                        .gradientBackground(
-                            colors = listOf(Color(0xFFDE911D), Color(0xFFF0B429)),
-
-                            cornerRadius = 10.dp,
-                            startCorner = Corner.TOP_LEFT,
-                            endCorner = Corner.BOTTOM_RIGHT
-                        )
-
-
-
-                ) {
-
-                }
+                HomeGoldenHourBox()
 
                 // Current weather box
                 Box(
+
                     modifier = Modifier
-                        .shadow(
-                            elevation = 10.dp,
-                            spotColor = Color(0x40000000),
-                            ambientColor = Color(0x40000000)
-                        )
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
                         .padding(top = 20.dp)
-                        .height(128.dp)
+
+                        .height(134.dp)
                         .background(
                             color = Color(0xFFF6F6F6),
                             shape = RoundedCornerShape(size = 10.dp)
@@ -175,7 +189,7 @@ fun HomeScreen(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel)
                                 color = Color(0xFF515151),
                             ),
                             modifier = Modifier
-                                .padding(start = 12.dp, top = 68.dp)
+                                .padding(start = 12.dp, top = 72.dp)
                         )
                     } ?: Text(
                         text = "-",
@@ -186,7 +200,7 @@ fun HomeScreen(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel)
                             color = Color(0xFF515151),
                         ),
                         modifier = Modifier
-                            .padding(start = 12.dp, top = 68.dp)
+                            .padding(start = 12.dp, top = 72.dp)
                     )
                     // Cloud cover
                     weatherData?.let { data ->
@@ -202,7 +216,7 @@ fun HomeScreen(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel)
                                 color = Color(0xFF7E7E7E),
                             ),
                             modifier = Modifier
-                                .padding(start = 12.dp, top = 100.dp)
+                                .padding(start = 12.dp, top = 103.dp)
                         )
                     } ?: Text(
                         text = "-",
@@ -213,49 +227,52 @@ fun HomeScreen(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel)
                             color = Color(0xFF7E7E7E),
                         ),
                         modifier = Modifier
-                            .padding(start = 12.dp, top = 100.dp)
+                            .padding(start = 12.dp, top = 103.dp)
 
                     )
 
                 }
             }
+
+
+            }
         }
 
 
-}
 
-enum class Corner {
-    TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
-}
 
-fun Modifier.gradientBackground(
-    colors: List<Color>,
-    cornerRadius: Dp,
-    startCorner: Corner = Corner.TOP_LEFT,
-    endCorner: Corner = Corner.BOTTOM_RIGHT
-) = this.then(
-    Modifier.drawBehind {
-        val startOffset = cornerToOffset(size, startCorner)
-        val endOffset = cornerToOffset(size, endCorner)
-
-        // Clip the drawing area to round the corners
-        clipRect {
-            drawRoundRect(
-                brush = Brush.linearGradient(
-                    colors = colors,
-                    start = startOffset,
-                    end = endOffset
-                ),
-                size = size,
-                cornerRadius = CornerRadius(cornerRadius.toPx())
-            )
-        }
-    }
-)
-
-private fun cornerToOffset(size: Size, corner: Corner): Offset = when (corner) {
-    Corner.TOP_LEFT -> Offset(0f, 0f)
-    Corner.TOP_RIGHT -> Offset(size.width, 0f)
-    Corner.BOTTOM_LEFT -> Offset(0f, size.height)
-    Corner.BOTTOM_RIGHT -> Offset(size.width, size.height)
-}
+//enum class Corner {
+//    TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
+//}
+//
+//fun Modifier.gradientBackground(
+//    colors: List<Color>,
+//    cornerRadius: Dp,
+//    startCorner: Corner = Corner.TOP_LEFT,
+//    endCorner: Corner = Corner.BOTTOM_RIGHT
+//) = this.then(
+//    Modifier.drawBehind {
+//        val startOffset = cornerToOffset(size, startCorner)
+//        val endOffset = cornerToOffset(size, endCorner)
+//
+//        // Clip the drawing area to round the corners
+//        clipRect {
+//            drawRoundRect(
+//                brush = Brush.linearGradient(
+//                    colors = colors,
+//                    start = startOffset,
+//                    end = endOffset
+//                ),
+//                size = size,
+//                cornerRadius = CornerRadius(cornerRadius.toPx())
+//            )
+//        }
+//    }
+//)
+//
+//private fun cornerToOffset(size: Size, corner: Corner): Offset = when (corner) {
+//    Corner.TOP_LEFT -> Offset(0f, 0f)
+//    Corner.TOP_RIGHT -> Offset(size.width, 0f)
+//    Corner.BOTTOM_LEFT -> Offset(0f, size.height)
+//    Corner.BOTTOM_RIGHT -> Offset(size.width, size.height)
+//}

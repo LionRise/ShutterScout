@@ -1,5 +1,8 @@
 package com.cc221042.shutterscout.ui.composables
 
-class HomeCurrentWeatherCard {
-    
+import androidx.compose.runtime.Composable
+
+@Composable
+fun HomeCurrentWeatherCard() {
+
 }
