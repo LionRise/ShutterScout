@@ -14,3 +14,10 @@
 .cxx
 local.properties
 /app/src/main/java/com/cc221042/shutterscout/data/
+/.idea/compiler.xml
+/.idea/deploymentTargetDropDown.xml
+/.idea/gradle.xml
+/.idea/kotlinc.xml
+/.idea/migrations.xml
+/.idea/misc.xml
+/.idea/vcs.xml
