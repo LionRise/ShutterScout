@@ -54,11 +54,11 @@ fun MainView(mainViewModel: MainViewModel, viewModel: WeatherViewModel) {
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController, selectedBottomNavScreen) }
-    ) { innerPadding -> MainNavHost(navController, mainViewModel, innerPadding, viewModel) }
+    ) { innerPadding -> MainNavHost(navController, mainViewModel, viewModel, innerPadding) }
 }
 
 @Composable
-fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, innerPadding: PaddingValues, viewModel: WeatherViewModel) {
+fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, innerPadding: PaddingValues) {
     NavHost(
         navController = navController,
         modifier = Modifier.padding(innerPadding),
@@ -66,7 +66,8 @@ fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, 
     ) {
         composable(Screen.First.route) {
             NavigationLogic(mainViewModel, Screen.First) {
-                HomeScreen(mainViewModel)
+                //AddPlaceScreen(mainViewModel)
+                HomeScreen(mainViewModel, weatherViewModel)
             }
         }
         composable(Screen.Second.route) {
@@ -76,7 +77,7 @@ fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, 
         }
         composable(Screen.Third.route) {
             NavigationLogic(mainViewModel, Screen.Third) {
-                WeatherDisplay(viewModel)
+                WeatherDisplay(weatherViewModel)
             }
         }
     }

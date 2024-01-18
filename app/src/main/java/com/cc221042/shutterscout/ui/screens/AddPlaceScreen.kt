@@ -32,7 +32,7 @@ import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 
 @Composable
-fun HomeScreen(mainViewModel: MainViewModel) {
+fun AddPlaceScreen(mainViewModel: MainViewModel) {
     var title by rememberSaveable { mutableStateOf("") }
     var condition by rememberSaveable { mutableStateOf("") }
     var imageUri by rememberSaveable { mutableStateOf("") }
