@@ -20,6 +20,7 @@ import com.cc221042.shutterscout.data.WeatherRepository
 import com.cc221042.shutterscout.data.secrets
 import com.cc221042.shutterscout.ui.WeatherViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModelFactory
+import com.cc221042.shutterscout.ui.screens.HomeScreen
 import com.cc221042.shutterscout.ui.theme.ShutterScoutTheme
 
 
@@ -46,9 +47,12 @@ class MainActivity : ComponentActivity() {
         weatherViewModel.loadWeather(latitude, longitude, sections, apiToken)
 
         setContent {
-            print("TEST")
-            Log.d("DEBUG", "MainActivity Loaded")
-            WeatherDisplay(weatherViewModel)
+//            print("TEST")
+//            Log.d("DEBUG", "MainActivity Loaded")
+//            WeatherDisplay(weatherViewModel)
+
+            // testing home screen
+            HomeScreen()
         }
     }
 
@@ -62,6 +66,7 @@ class MainActivity : ComponentActivity() {
             val weatherDescription = data.current.temperature
 
             Text(text = "Current Weather: $weatherDescription C")
+            Text(text = "TEST")
         } ?: Text(text = "Loading weather data...")
     }
 
