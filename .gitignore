@@ -13,7 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
-/app/src/main/java/com/cc221042/shutterscout/data/
+/app/src/main/java/com/cc221042/shutterscout/data/secrets.kt
 /.idea/compiler.xml
 /.idea/deploymentTargetDropDown.xml
 /.idea/gradle.xml
