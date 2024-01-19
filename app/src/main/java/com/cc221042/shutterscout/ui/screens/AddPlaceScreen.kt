@@ -66,6 +66,7 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 
     // map icon
     var icon by rememberSaveable { mutableStateOf("") }
+    icon = "map-marker-alt"
 
     val photoPicker = setupPhotoPicker { uri: Uri ->
         imageUri = uri.toString()

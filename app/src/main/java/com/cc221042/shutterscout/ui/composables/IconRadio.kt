@@ -45,7 +45,7 @@ fun IconRadio(name: String, isSelected: Boolean, onClick: () -> Unit) {
             style = TextStyle(
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
-                fontFamily = FontFamily(Font(R.font.font_awesome)),
+                fontFamily = FontFamily(Font(R.font.font_awesomesolid)),
                 fontWeight = FontWeight(900),
                 color = if (isSelected) Color(0xFF127FBF) else Color(0xFF9E9E9E),
                 textAlign = TextAlign.Center,
