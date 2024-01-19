@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cc221042.shutterscout.ui.composables.AddPlaceButton
+import com.cc221042.shutterscout.ui.screens.AddPlaceScreen
 import com.cc221042.shutterscout.ui.screens.HomeScreen
 import com.cc221042.shutterscout.ui.screens.PlacesScreen
 import com.cc221042.shutterscout.ui.screens.WeatherDisplay
@@ -32,6 +33,7 @@ sealed class Screen(val route: String) {
     object First : Screen("first")
     object Second : Screen("second")
     object Third : Screen("third")
+    object AddPlace : Screen("addPlace")
 }
 
 enum class BottomNavScreen(val route: String, val icon: ImageVector, val contentDescription: String) {
@@ -46,23 +48,29 @@ fun MainView(mainViewModel: MainViewModel, viewModel: WeatherViewModel) {
     val state = mainViewModel.mainViewState.collectAsState()
     val navController = rememberNavController()
 
-    // Convert Screen to BottomNavScreen
-    val selectedBottomNavScreen = when (state.value.selectedScreen) {
-        Screen.First -> BottomNavScreen.First
-        Screen.Second -> BottomNavScreen.Second
-        Screen.Third -> BottomNavScreen.Third
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.route) {
+                Screen.First.route -> mainViewModel.selectScreen(Screen.First)
+                Screen.Second.route -> mainViewModel.selectScreen(Screen.Second)
+                Screen.Third.route -> mainViewModel.selectScreen(Screen.Third)
+                Screen.AddPlace.route -> mainViewModel.selectScreen(Screen.AddPlace)
+            }
+        }
     }
 
-
     Scaffold(
-        modifier = Modifier
-            .padding(0.dp),
-
-
-        bottomBar = { BottomNavigationBar(navController, selectedBottomNavScreen)
+        modifier = Modifier.padding(0.dp),
+        bottomBar = {
+            if (state.value.selectedScreen != Screen.AddPlace) {
+                BottomNavigationBar(navController, state.value.selectedScreen)
+            }
         },
-        floatingActionButton = { AddPlaceButton {
-
+        floatingActionButton = {
+            if (state.value.selectedScreen != Screen.AddPlace) {
+                AddPlaceButton(navController) {
+                    navController.navigate(Screen.AddPlace.route)
+                }
             }
         }
     ) { innerPadding -> MainNavHost(navController, mainViewModel, viewModel, innerPadding) }
@@ -72,25 +80,12 @@ fun MainView(mainViewModel: MainViewModel, viewModel: WeatherViewModel) {
 fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, innerPadding: PaddingValues) {
     NavHost(
         navController = navController,
-        modifier = Modifier.padding(innerPadding),
         startDestination = Screen.First.route
     ) {
-        composable(Screen.First.route) {
-            NavigationLogic(mainViewModel, Screen.First) {
-                //AddPlaceScreen(mainViewModel)
-                HomeScreen(mainViewModel, weatherViewModel)
-            }
-        }
-        composable(Screen.Second.route) {
-            NavigationLogic(mainViewModel, Screen.Second) {
-                PlacesScreen(mainViewModel)
-            }
-        }
-        composable(Screen.Third.route) {
-            NavigationLogic(mainViewModel, Screen.Third) {
-                WeatherDisplay(weatherViewModel)
-            }
-        }
+        composable(Screen.First.route) { HomeScreen(mainViewModel, weatherViewModel) }
+        composable(Screen.Second.route) { PlacesScreen(mainViewModel) }
+        composable(Screen.Third.route) { WeatherDisplay(weatherViewModel) }
+        composable(Screen.AddPlace.route) { AddPlaceScreen(mainViewModel) }
     }
 }
 
@@ -104,11 +99,11 @@ fun NavigationLogic(mainViewModel: MainViewModel, screen: Screen, content: @Comp
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController, selectedScreen: BottomNavScreen) {
+fun BottomNavigationBar(navController: NavHostController, selectedScreen: Screen) {
     BottomNavigation(backgroundColor = MaterialTheme.colorScheme.primary) {
         BottomNavScreen.entries.forEach { screen ->
             NavigationBarItem(
-                selected = (selectedScreen == screen),
+                selected = (selectedScreen.route == screen.route),
                 onClick = { navController.navigate(screen.route) },
                 icon = { Icon(imageVector = screen.icon, contentDescription = screen.contentDescription) }
             )

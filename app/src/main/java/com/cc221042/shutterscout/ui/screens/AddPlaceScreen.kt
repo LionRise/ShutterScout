@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,50 +43,59 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
         imageUri = uri.toString()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "ShutterScout", fontSize = 50.sp, style = TextStyle(fontFamily = FontFamily.Cursive))
+    Scaffold(
 
-        Spacer(modifier = Modifier.height(50.dp))
+    ) {innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
 
-        TextField(
-            value = title,
-            onValueChange = { newText -> title = newText },
-            label = { Text("Title of your place") }
-        )
-        TextField(
-            value = condition,
-            onValueChange = { newText -> condition = newText },
-            label = { Text("Condition of your place") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-            modifier = Modifier.padding(top = 10.dp)
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Open Gallery", fontSize = 20.sp)
+            Text(text = "ShutterScout", fontSize = 50.sp, style = TextStyle(fontFamily = FontFamily.Cursive))
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            TextField(
+                value = title,
+                onValueChange = { newText -> title = newText },
+                label = { Text("Title of your place") }
+            )
+            TextField(
+                value = condition,
+                onValueChange = { newText -> condition = newText },
+                label = { Text("Condition of your place") }
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                modifier = Modifier.padding(top = 10.dp)
+            ) {
+                Text("Open Gallery", fontSize = 20.sp)
+            }
+
+            Button(
+                onClick = {
+                    mainViewModel.save(Place(title, condition, imageUri))
+                    saveSuccess = true // Update the state to reflect save success
+                },
+                modifier = Modifier.padding(top = 15.dp),
+                enabled = title.isNotBlank() && condition.isNotBlank()
+            ) {
+                Text("Save", fontSize = 20.sp)
+            }
+
+            if (saveSuccess) {
+                Text("Place saved successfully!", color = Color.Green)
+            }
         }
 
-        Button(
-            onClick = {
-                mainViewModel.save(Place(title, condition, imageUri))
-                saveSuccess = true // Update the state to reflect save success
-            },
-            modifier = Modifier.padding(top = 15.dp),
-            enabled = title.isNotBlank() && condition.isNotBlank()
-        ) {
-            Text("Save", fontSize = 20.sp)
-        }
-
-        if (saveSuccess) {
-            Text("Place saved successfully!", color = Color.Green)
-        }
     }
+
+
 }
