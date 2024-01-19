@@ -20,9 +20,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,8 +52,11 @@ import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 import com.cc221042.shutterscout.ui.gradientBackground
 import androidx.compose.ui.geometry.Offset
+import com.cc221042.shutterscout.ui.composables.ConditionsRadio
+import com.cc221042.shutterscout.ui.composables.ConditionsRow
 import com.cc221042.shutterscout.ui.composables.IconRadio
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPlaceScreen(mainViewModel: MainViewModel) {
     var title by rememberSaveable { mutableStateOf("")}
@@ -67,6 +72,9 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
     // map icon
     var icon by rememberSaveable { mutableStateOf("") }
     icon = "map-marker-alt"
+
+    // conditions
+    var conditions by rememberSaveable { mutableStateOf("") }
 
     val photoPicker = setupPhotoPicker { uri: Uri ->
         imageUri = uri.toString()
@@ -215,11 +223,18 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                 TextField(
                     value = title,
                     onValueChange = { newText -> title = newText },
-                    label = { null }
+                    label = { null },
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
+                    // TODO change colour to a proper one
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+
                 )
 
                 Text(
                     text = "Icon on map",
+
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 14.sp,
@@ -262,26 +277,84 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                         Spacer(modifier = Modifier.width(12.dp))
                     }
                 }
-                Spacer(modifier = Modifier.height(200.dp))
-                TextField(
-                    value = condition,
-                    onValueChange = { newText -> condition = newText },
-                    label = { Text("Condition of your place") }
+
+                Text(
+                    text = "Icon on map",
+
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        lineHeight = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.lexend)),
+                        fontWeight = FontWeight(400),
+                        color = Color(0xFF565656),
+                    ), modifier = Modifier
+                        .padding(top = 20.dp, bottom = 12.dp)
                 )
+
+                val possible_conditions = listOf("sunrise", "sunset","midday", "clouds", "rain", "snow", "thunder", "fog")
+                val possible_conditions_icons = listOf("sunrise", "sunset", "sun", "cloud", "cloud-rain", "snowflake", "thunderstorm", "fog")
+
+
+
+//                TextField(
+//                    value = condition,
+//                    onValueChange = { newText -> condition = newText },
+//                    label = { Text("Condition of your place") }
+//                )
+                // Split icons into two rows
+                val firstRowConditionsIcons = possible_conditions_icons.take(4)
+                val firstRowConditionsNames = possible_conditions.take(4)
+
+                val secondRowConditionsIcons = possible_conditions_icons.drop(4)
+                val secondRowConditionsNames = possible_conditions.drop(4)
+
+                ConditionsRow(
+                    conditions = firstRowConditionsNames,
+                    icons = firstRowConditionsIcons,
+                    selectedCondition = condition,
+                    onConditionSelected = { newCondition -> condition = newCondition }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ConditionsRow(
+                    conditions = secondRowConditionsNames,
+                    icons = secondRowConditionsIcons,
+                    selectedCondition = condition,
+                    onConditionSelected = { newCondition -> condition = newCondition }
+                )
+
 
                 Spacer(modifier = Modifier.height(20.dp))
 
 
 
+
+                // TODO add gradient
                 Button(
                     onClick = {
                         mainViewModel.save(Place(title, condition, imageUri, latitude, longitude))
                         saveSuccess = true // Update the state to reflect save success
                     },
-                    modifier = Modifier.padding(top = 15.dp),
-                    enabled = title.isNotBlank() && condition.isNotBlank()
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFFCB6E17)),
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .width(130.dp)
+                        .height(40.dp)
+                        .height(138.dp),
+//                    enabled = title.isNotBlank() && condition.isNotBlank()
                 ) {
-                    Text("Save", fontSize = 20.sp)
+                    Text(
+                        text = "Save",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 16.sp,
+                            fontWeight = FontWeight(400),
+                            color = Color(0xFFF7F7F7),
+
+                            )
+                    )
                 }
 
                 if (saveSuccess) {
