@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.cc221042.shutterscout"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -100,6 +100,9 @@ dependencies {
     // ROOM
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
+
+    // Golden Hour
+    implementation("com.github.phototime:solarized-android:1.0.8")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

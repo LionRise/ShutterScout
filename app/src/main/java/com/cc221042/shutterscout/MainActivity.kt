@@ -17,17 +17,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cc221042.shutterscout.data.PlaceDB
 import com.cc221042.shutterscout.ui.MainView
 import com.cc221042.shutterscout.ui.MainViewModel
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.cc221042.shutterscout.data.WeatherMeteosourceService
 import com.cc221042.shutterscout.data.WeatherRepository
 import com.cc221042.shutterscout.data.secrets
+import com.cc221042.shutterscout.ui.GoldenHourViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModelFactory
 import com.cc221042.shutterscout.ui.theme.ShutterScoutTheme
-import java.io.File
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
 
@@ -68,10 +65,12 @@ class MainActivity : ComponentActivity() {
 
         val viewModelFactory = WeatherViewModelFactory(weatherRepository)
         val weatherViewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
+        val goldenHourViewModel = ViewModelProvider(this).get(GoldenHourViewModel::class.java)
 
-        // Load weather data
+        // Load position data (for weather and golden hour)
         val latitude: Double = 48.208176 // Replace with actual latitude
         val longitude: Double = 16.373819 // Replace with actual longitude
+
         val sections: String = "all"
         val apiToken = secrets.weatherAPI // Replace with your API token
         weatherViewModel.loadWeather(latitude, longitude, sections, apiToken)
@@ -83,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainView(mainViewModel, weatherViewModel)
+                    MainView(mainViewModel, weatherViewModel, goldenHourViewModel)
                 }
             }
         }
