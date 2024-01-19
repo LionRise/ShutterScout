@@ -72,7 +72,7 @@ fun EditPlaceModal(mainViewModel: MainViewModel) {
             },
             confirmButton = {
                 Button(onClick = {
-                    mainViewModel.updatePlace(Place(title, condition, imageUri, place.id))
+                    mainViewModel.updatePlace(Place(title, condition, imageUri, place.latitude, place.longitude, place.id))
                     Log.d("duck", "confirm button clicked")
                 }) {
                     Text("Confirm")

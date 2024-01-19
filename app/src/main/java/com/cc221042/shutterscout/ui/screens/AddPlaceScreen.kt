@@ -24,11 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cc221042.shutterscout.Place
+import com.cc221042.shutterscout.data.getLatLongFromImageUri
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 
@@ -39,8 +41,16 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
     var imageUri by rememberSaveable { mutableStateOf("") }
     var saveSuccess by remember { mutableStateOf(false) }
 
+    // location extraction from image EXIF data
+    var latitude by rememberSaveable { mutableStateOf<Double?>(null) }
+    var longitude by rememberSaveable { mutableStateOf<Double?>(null) }
+    val context = LocalContext.current
+
     val photoPicker = setupPhotoPicker { uri: Uri ->
         imageUri = uri.toString()
+        val latLong = getLatLongFromImageUri(context, uri)
+        latitude = latLong.first
+        longitude = latLong.second
     }
 
     Scaffold(
@@ -81,7 +91,7 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 
             Button(
                 onClick = {
-                    mainViewModel.save(Place(title, condition, imageUri))
+                    mainViewModel.save(Place(title, condition, imageUri, latitude, longitude))
                     saveSuccess = true // Update the state to reflect save success
                 },
                 modifier = Modifier.padding(top = 15.dp),
