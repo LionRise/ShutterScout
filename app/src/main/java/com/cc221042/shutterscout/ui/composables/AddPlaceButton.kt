@@ -16,14 +16,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.cc221042.shutterscout.R
 // for the gradient
 import com.cc221042.shutterscout.ui.Corner
+import com.cc221042.shutterscout.ui.Screen
 import com.cc221042.shutterscout.ui.gradientBackground
 
 
 @Composable
-fun AddPlaceButton(onClick: () -> Unit) {
+fun AddPlaceButton(navController: NavHostController, onClick: () -> Unit) {
     ExtendedFloatingActionButton(
         modifier = Modifier
 //            .gradientBackground(
@@ -37,7 +39,10 @@ fun AddPlaceButton(onClick: () -> Unit) {
         // TODO make gradient
         containerColor = Color(0xFF1992D4),
 
-        onClick = { onClick() },
+        onClick = {
+            onClick() // Existing logic
+            navController.navigate(Screen.AddPlace.route) // Navigate to AddPlaceScreen
+        },
 //        icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
         icon = { Text(
             text = "map-marker-plus",
