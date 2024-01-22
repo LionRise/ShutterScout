@@ -25,7 +25,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cc221042.shutterscout.ui.composables.AddPlaceButton
-import com.cc221042.shutterscout.ui.screens.GoldenHourScreen
 import com.cc221042.shutterscout.ui.screens.HomeScreen
 import com.cc221042.shutterscout.ui.screens.PlacesScreen
 import com.cc221042.shutterscout.ui.screens.WeatherDisplay
@@ -92,7 +91,7 @@ fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, 
         composable(Screen.First.route) { HomeScreen(mainViewModel, weatherViewModel) }
         composable(Screen.Second.route) { PlacesScreen(mainViewModel) }
         composable(Screen.Third.route) { WeatherDisplay(weatherViewModel) }
-        composable(Screen.Fourth.route) { GoldenHourScreen(goldenViewModel) }
+//        composable(Screen.Fourth.route) { GoldenHourScreen(goldenViewModel) }
         composable(Screen.AddPlace.route) { AddPlaceScreen(mainViewModel) }
     }
 }

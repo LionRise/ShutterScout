@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cc221042.shutterscout.R
+import com.cc221042.shutterscout.ui.GoldenHourViewModel
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModel
 import com.cc221042.shutterscout.ui.composables.AddPlaceButton
@@ -55,8 +56,13 @@ import kotlin.math.sqrt
 
 @Composable
 @Preview
-fun HomeScreen(mainViewModel: MainViewModel = viewModel(), weatherViewModel: WeatherViewModel = viewModel()) {
+fun HomeScreen(
+    mainViewModel: MainViewModel = viewModel(),
+    weatherViewModel: WeatherViewModel = viewModel(),
+    goldenHourViewModel: GoldenHourViewModel = viewModel()
+) {
     val weatherData by weatherViewModel.weatherData.collectAsState()
+    val countdownValue by goldenHourViewModel.countdownValue.collectAsState()
 
 
         val lexend = FontFamily(Font(R.font.lexend))
@@ -119,7 +125,7 @@ fun HomeScreen(mainViewModel: MainViewModel = viewModel(), weatherViewModel: Wea
                     .background(Color.Transparent)
             ) {
 
-                HomeGoldenHourBox()
+                HomeGoldenHourBox(countdownValue)
 
                 // Current weather box
                 Box(

@@ -24,8 +24,7 @@ import com.cc221042.shutterscout.ui.Corner
 import com.cc221042.shutterscout.ui.gradientBackground
 
 @Composable
-@Preview
-fun HomeGoldenHourBox() {
+fun HomeGoldenHourBox(countdownTime: String) {
     // Golden hour box
     Box(
         modifier = Modifier
@@ -64,7 +63,7 @@ fun HomeGoldenHourBox() {
                 .padding(start = 12.dp, top = 12.dp)
         )
         Text(
-            text = "2:30:15",
+            text = countdownTime,
             style = TextStyle(
                 fontSize = 32.sp,
                 fontWeight = FontWeight(400),
