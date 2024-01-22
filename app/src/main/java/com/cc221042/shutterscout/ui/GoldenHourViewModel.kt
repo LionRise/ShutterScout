@@ -24,7 +24,7 @@ class GoldenHourViewModel : ViewModel() {
     private val _countdownValue = MutableStateFlow(formatDuration(_countdownDuration))
     val countdownValue: StateFlow<String> = _countdownValue.asStateFlow()
 
-    val latitude = 48.208176
+    val latitude = 70.208176
     val longitude = 16.373819
     val zoneId = ZoneId.systemDefault()
 

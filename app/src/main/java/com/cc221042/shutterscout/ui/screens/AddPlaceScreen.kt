@@ -66,8 +66,9 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
     var saveSuccess by remember { mutableStateOf(false) }
 
     // location extraction from image EXIF data
-    var latitude by rememberSaveable { mutableStateOf<Double?>(null) }
-    var longitude by rememberSaveable { mutableStateOf<Double?>(null) }
+    var latitudeText by rememberSaveable { mutableStateOf("") } // For user input
+    var longitudeText by rememberSaveable { mutableStateOf("") } // For user input
+
     val context = LocalContext.current
 
     // map icon
@@ -80,8 +81,8 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
     val photoPicker = setupPhotoPicker { uri: Uri ->
         imageUri = uri.toString()
         val latLong = getLatLongFromImageUri(context, uri)
-        latitude = latLong.first
-        longitude = latLong.second
+        //latitude = latLong.first
+        //longitude = latLong.second
     }
 
     val gradientColors = listOf(Color(0xFFDE911D), Color(0xFFF0B429))
@@ -96,31 +97,6 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
         containerColor = Color(0xFFF7F7F7),
     ) {innerPadding ->
 
-        // Go back box
-        Box(modifier = Modifier.fillMaxSize()) { // Full-screen canvas
-            Box(
-                modifier = Modifier
-                    .offset(x = 2.dp, y = 10.dp) // Positioning offset
-                    .width(48.dp)
-                    .height(48.dp)
-                    .background(Color.Yellow),
-                contentAlignment = Alignment.Center // Ensures the chevron is centered in the box
-            ) {
-                Text(
-                    text = "chevron-left",
-                    style = TextStyle(
-                        fontSize = 22.sp,
-                        lineHeight = 28.sp,
-                        fontFamily = FontFamily(Font(R.font.font_awesome)),
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF565656),
-                        textAlign = TextAlign.Center,
-                    ), modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        }
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -131,19 +107,6 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
-            Text(
-                text = "Add a new place",
-                style = TextStyle(
-                    fontSize = 22.sp,
-                    lineHeight = 28.sp,
-                    fontFamily = FontFamily(Font(R.font.lexend)),
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFF565656),
-                    textAlign = TextAlign.Center,
-                ), modifier = Modifier
-                    .padding(top = 20.dp)
-            )
             Box(
                 modifier = Modifier
                     .padding(top = 38.dp)
@@ -199,112 +162,154 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
         }
 
 
-            Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
+// Go back box
+        Button(
+            onClick = {
+                val latitude = latitudeText.toDoubleOrNull()
+                val longitude = longitudeText.toDoubleOrNull()
+                mainViewModel.save(Place(title, condition, imageUri, latitude, longitude))
+                saveSuccess = true // Update the state to reflect save success
+            },
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFFCB6E17)),
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .width(130.dp)
+                .height(40.dp)
+                .height(138.dp),
+//                    enabled = title.isNotBlank() && condition.isNotBlank()
+        ) {
+            Text(
+                text = "Save",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFFF7F7F7),
+                )
+            )
+        }
 
+        if (saveSuccess) {
+            Text("Place saved successfully!", color = Color.Green)
+        }
 
-            Column(
-                modifier = Modifier
-                    .padding(top = 244.dp, start = 12.dp)
+        Column(
+            modifier = Modifier
+                .padding(top = 244.dp, start = 12.dp)
 
-            ) {
-                Text(
-                    text = "Name",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        lineHeight = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.lexend)),
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF565656),
-                    ), modifier = Modifier
+        ) {
+            Text(
+                text = "Name",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF565656),
+                ), modifier = Modifier
 //                    .padding(top = 244.dp, start = 12.dp)
-                )
+            )
 
 
-                TextField(
-                    value = title,
+            TextField(
+                value = title,
 
-                    onValueChange = { newText -> title = newText },
-                    singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
+                onValueChange = { newText -> title = newText },
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
 
 
                     ),
-                    textStyle = TextStyle(
+                textStyle = TextStyle(
 
-                        color = Color.Black,
-                        // Adjust lineHeight if needed
-                        lineHeight = TextUnit.Unspecified
-                    ),
-                    modifier = Modifier
-                        .padding(top = 8.dp) // Decreased padding
-                )
+                    color = Color.Black,
+                    // Adjust lineHeight if needed
+                    lineHeight = TextUnit.Unspecified
+                ),
+                modifier = Modifier
+                    .padding(top = 8.dp) // Decreased padding
+            )
+            //input for latitude
+            TextField(
+                value = latitudeText,
+                onValueChange = { newText -> latitudeText = newText },
+                label = { Text("Latitude") }
+            )
 
-                Text(
-                    text = "Icon on map",
+            TextField(
+                value = longitudeText,
+                onValueChange = { newText -> longitudeText = newText },
+                label = { Text("Longitude") }
+            )
 
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        lineHeight = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.lexend)),
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF565656),
-                    ), modifier = Modifier
+            Text(
+                text = "Icon on map",
+
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF565656),
+                ), modifier = Modifier
                     .padding(top = 20.dp, bottom = 12.dp)
-                )
+            )
 
-                // Define your icons
-                val icons = listOf("map-marker-alt", "star", "heart", "mountain", "building", "university", "water", "tree")
+            // Define your icons
+            val icons = listOf("map-marker-alt", "star", "heart", "mountain", "building", "university", "water", "tree")
 
-                // Split icons into two rows
-                val firstRowIcons = icons.take(4)
-                val secondRowIcons = icons.drop(4)
+            // Split icons into two rows
+            val firstRowIcons = icons.take(4)
+            val secondRowIcons = icons.drop(4)
 
-                // First row of icons
-                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                    firstRowIcons.forEach { iconName ->
-                        IconRadio(
-                            name = iconName,
-                            isSelected = icon == iconName,
-                            onClick = { icon = iconName }
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
+            // First row of icons
+            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                firstRowIcons.forEach { iconName ->
+                    IconRadio(
+                        name = iconName,
+                        isSelected = icon == iconName,
+                        onClick = { icon = iconName }
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
                 }
+            }
 
-                Spacer(modifier = Modifier.height(12.dp)) // Space between rows
+            Spacer(modifier = Modifier.height(12.dp)) // Space between rows
 
-                // Second row of icons
-                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                    secondRowIcons.forEach { iconName ->
-                        IconRadio(
-                            name = iconName,
-                            isSelected = icon == iconName,
-                            onClick = { icon = iconName }
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
+            // Second row of icons
+            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                secondRowIcons.forEach { iconName ->
+                    IconRadio(
+                        name = iconName,
+                        isSelected = icon == iconName,
+                        onClick = { icon = iconName }
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
                 }
+            }
 
-                Text(
-                    text = "Icon on map",
+            Text(
+                text = "Icon on map",
 
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        lineHeight = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.lexend)),
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF565656),
-                    ), modifier = Modifier
-                        .padding(top = 20.dp, bottom = 12.dp)
-                )
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF565656),
+                ), modifier = Modifier
+                    .padding(top = 20.dp, bottom = 12.dp)
+            )
 
-                val possible_conditions = listOf("sunrise", "sunset","midday", "clouds", "rain", "snow", "thunder", "fog")
-                val possible_conditions_icons = listOf("sunrise", "sunset", "sun", "cloud", "cloud-rain", "snowflake", "thunderstorm", "fog")
+            val possible_conditions = listOf("sunrise", "sunset","midday", "clouds", "rain", "snow", "thunder", "fog")
+            val possible_conditions_icons = listOf("sunrise", "sunset", "sun", "cloud", "cloud-rain", "snowflake", "thunderstorm", "fog")
 
 
 
@@ -313,69 +318,34 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 //                    onValueChange = { newText -> condition = newText },
 //                    label = { Text("Condition of your place") }
 //                )
-                // Split icons into two rows
-                val firstRowConditionsIcons = possible_conditions_icons.take(4)
-                val firstRowConditionsNames = possible_conditions.take(4)
+            // Split icons into two rows
+            val firstRowConditionsIcons = possible_conditions_icons.take(4)
+            val firstRowConditionsNames = possible_conditions.take(4)
 
-                val secondRowConditionsIcons = possible_conditions_icons.drop(4)
-                val secondRowConditionsNames = possible_conditions.drop(4)
+            val secondRowConditionsIcons = possible_conditions_icons.drop(4)
+            val secondRowConditionsNames = possible_conditions.drop(4)
 
-                ConditionsRow(
-                    conditions = firstRowConditionsNames,
-                    icons = firstRowConditionsIcons,
-                    selectedCondition = condition,
-                    onConditionSelected = { newCondition -> condition = newCondition }
-                )
+            ConditionsRow(
+                conditions = firstRowConditionsNames,
+                icons = firstRowConditionsIcons,
+                selectedCondition = condition,
+                onConditionSelected = { newCondition -> condition = newCondition }
+            )
 
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-                ConditionsRow(
-                    conditions = secondRowConditionsNames,
-                    icons = secondRowConditionsIcons,
-                    selectedCondition = condition,
-                    onConditionSelected = { newCondition -> condition = newCondition }
-                )
-
-
-                Spacer(modifier = Modifier.height(20.dp))
+            ConditionsRow(
+                conditions = secondRowConditionsNames,
+                icons = secondRowConditionsIcons,
+                selectedCondition = condition,
+                onConditionSelected = { newCondition -> condition = newCondition }
+            )
 
 
+            Spacer(modifier = Modifier.height(20.dp))
 
+            // TODO add gradient
 
-                // TODO add gradient
-                Button(
-                    onClick = {
-                        mainViewModel.save(Place(title, condition, imageUri, latitude, longitude))
-                        saveSuccess = true // Update the state to reflect save success
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFFCB6E17)),
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .width(130.dp)
-                        .height(40.dp)
-                        .height(138.dp),
-//                    enabled = title.isNotBlank() && condition.isNotBlank()
-                ) {
-                    Text(
-                        text = "Save",
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            lineHeight = 16.sp,
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFFF7F7F7),
-
-                            )
-                    )
-                }
-
-                if (saveSuccess) {
-                    Text("Place saved successfully!", color = Color.Green)
-                }
-            }
         }
-
-
-
     }
-
+}

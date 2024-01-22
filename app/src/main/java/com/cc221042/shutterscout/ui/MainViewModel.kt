@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val dao: PlaceDao) : ViewModel() {
 
-    private val _placeState = MutableStateFlow(Place("", "", ""))
+    private val _placeState = MutableStateFlow(Place("", "", "", 0.0, 0.0))
     val placeState: StateFlow<Place> = _placeState.asStateFlow()
     private val _mainViewState = MutableStateFlow(MainViewState())
     val mainViewState: StateFlow<MainViewState> = _mainViewState.asStateFlow()
