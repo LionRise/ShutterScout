@@ -35,7 +35,7 @@ fun AddPlaceButton(navController: NavHostController, onClick: () -> Unit) {
 //                startCorner = Corner.BOTTOM_LEFT,
 //                endCorner = Corner.TOP_RIGHT
 //            ),
-            ,
+        ,
         // TODO make gradient
         containerColor = Color(0xFF1992D4),
 
