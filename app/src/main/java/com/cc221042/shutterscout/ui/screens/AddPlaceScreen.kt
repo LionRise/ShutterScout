@@ -52,6 +52,7 @@ import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 import com.cc221042.shutterscout.ui.gradientBackground
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.TextUnit
 import com.cc221042.shutterscout.ui.composables.ConditionsRadio
 import com.cc221042.shutterscout.ui.composables.ConditionsRow
 import com.cc221042.shutterscout.ui.composables.IconRadio
@@ -222,14 +223,25 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 
                 TextField(
                     value = title,
+
                     onValueChange = { newText -> title = newText },
-                    label = { null },
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
-                    // TODO change colour to a proper one
-                    modifier = Modifier
-                        .padding(top = 12.dp)
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
 
+
+                    ),
+                    textStyle = TextStyle(
+
+                        color = Color.Black,
+                        // Adjust lineHeight if needed
+                        lineHeight = TextUnit.Unspecified
+                    ),
+                    modifier = Modifier
+                        .padding(top = 8.dp) // Decreased padding
                 )
 
                 Text(
