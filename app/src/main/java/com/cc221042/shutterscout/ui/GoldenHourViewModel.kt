@@ -20,9 +20,8 @@ class GoldenHourViewModel : ViewModel() {
     private val _goldenHourTimes = MutableStateFlow<GoldenHourTimes?>(null)
     val goldenHourTimes: StateFlow<GoldenHourTimes?> = _goldenHourTimes
 
-    private var _countdownDuration = Duration.ofHours(2).plusMinutes(30).plusSeconds(15)
-    private val _countdownValue = MutableStateFlow(formatDuration(_countdownDuration))
-    val countdownValue: StateFlow<String> = _countdownValue.asStateFlow()
+    private val _timeToNextGoldenHour = MutableStateFlow<String>("")
+    val timeToNextGoldenHour: StateFlow<String> = _timeToNextGoldenHour.asStateFlow()
 
     val latitude = 48.208176
     val longitude = 16.373819
@@ -34,16 +33,16 @@ class GoldenHourViewModel : ViewModel() {
                 loadGoldenHourTimes()
                 val currentTime = LocalDateTime.now(zoneId)
                 val nextGoldenHour = getNextGoldenHourTime(currentTime)
-                val durationUntilNextGoldenHour = Duration.between(currentTime, nextGoldenHour)
 
-                // Update countdown
-                if (_countdownDuration.seconds > 0) {
-                    _countdownDuration = _countdownDuration.minusSeconds(1)
-                    _countdownValue.value = formatDuration(_countdownDuration)
-                } else {
-                    // Reset countdown or handle zero countdown
-                    _countdownDuration = Duration.ofHours(2).plusMinutes(30).plusSeconds(15)
-                }
+                // Calculate time remaining until the next golden hour
+                val durationUntilNextGoldenHour = Duration.between(currentTime, nextGoldenHour)
+                var hours = durationUntilNextGoldenHour.toHours()
+                // TODO understand whyv - maybe it results the sunset now the beggining of golden hour
+                hours -= 1
+                val minutes = (durationUntilNextGoldenHour.toMinutes() % 60)
+                val seconds = (durationUntilNextGoldenHour.seconds % 60)
+
+                _timeToNextGoldenHour.value = String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
                 delay(1000) // Update every second
             }
