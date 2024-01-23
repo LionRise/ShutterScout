@@ -70,7 +70,7 @@ fun HomeScreen(
     goldenHourViewModel: GoldenHourViewModel = viewModel()
 ) {
     val weatherData by weatherViewModel.weatherData.collectAsState()
-    val countdownValue by goldenHourViewModel.timeToNextGoldenHour.collectAsState()
+    val countdownValue by goldenHourViewModel.countdownValue.collectAsState()
 
     if (weatherData != null) {
         val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)

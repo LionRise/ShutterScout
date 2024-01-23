@@ -19,9 +19,9 @@ class MapViewModel(private val dao: PlaceDao) : ViewModel() {
 
     private fun loadPlaces() {
         viewModelScope.launch {
-            dao.getPlaces().collect { placesList ->
-                _places.value = placesList
-            }
+            var placesList = dao.getPlaces()
+            _places.value = placesList
+
         }
     }
 }

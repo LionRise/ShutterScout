@@ -20,10 +20,11 @@ class GoldenHourViewModel : ViewModel() {
     private val _goldenHourTimes = MutableStateFlow<GoldenHourTimes?>(null)
     val goldenHourTimes: StateFlow<GoldenHourTimes?> = _goldenHourTimes
 
-    private val _timeToNextGoldenHour = MutableStateFlow<String>("")
-    val timeToNextGoldenHour: StateFlow<String> = _timeToNextGoldenHour.asStateFlow()
+    private var _countdownDuration = Duration.ofHours(2).plusMinutes(30).plusSeconds(15)
+    private val _countdownValue = MutableStateFlow(formatDuration(_countdownDuration))
+    val countdownValue: StateFlow<String> = _countdownValue.asStateFlow()
 
-    val latitude = 70.208176
+    val latitude = 48.208176
     val longitude = 16.373819
     val zoneId = ZoneId.systemDefault()
 
@@ -31,18 +32,20 @@ class GoldenHourViewModel : ViewModel() {
         viewModelScope.launch {
             while (isActive) {
                 loadGoldenHourTimes()
-                val currentTime = LocalDateTime.now(zoneId)
+                var currentTime = LocalDateTime.now(zoneId)
                 val nextGoldenHour = getNextGoldenHourTime(currentTime)
+                // fix the Golden hour != sunset
+                _countdownDuration = Duration.between(currentTime, nextGoldenHour.minusMinutes(60))
 
-                // Calculate time remaining until the next golden hour
-                val durationUntilNextGoldenHour = Duration.between(currentTime, nextGoldenHour)
-                var hours = durationUntilNextGoldenHour.toHours()
-                // TODO understand whyv - maybe it results the sunset now the beggining of golden hour
-                hours -= 1
-                val minutes = (durationUntilNextGoldenHour.toMinutes() % 60)
-                val seconds = (durationUntilNextGoldenHour.seconds % 60)
-
-                _timeToNextGoldenHour.value = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+                // Update countdown
+                if (_countdownDuration.seconds > 0) {
+                    _countdownValue.value = formatDuration(_countdownDuration)
+                } else {
+                    // Once golden hour is reached, calculate for the next one
+                    loadGoldenHourTimes() // Refresh golden hour times
+                    val newNextGoldenHour = getNextGoldenHourTime(LocalDateTime.now(zoneId))
+                    _countdownDuration = Duration.between(LocalDateTime.now(zoneId), newNextGoldenHour)
+                }
 
                 delay(1000) // Update every second
             }
