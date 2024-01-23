@@ -66,6 +66,7 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
     var saveSuccess by remember { mutableStateOf(false) }
 
     // location extraction from image EXIF data
+    // we don't need
     var latitudeText by rememberSaveable { mutableStateOf("") } // For user input
     var longitudeText by rememberSaveable { mutableStateOf("") } // For user input
 
