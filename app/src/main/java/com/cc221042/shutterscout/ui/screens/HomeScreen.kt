@@ -1,19 +1,26 @@
 package com.cc221042.shutterscout.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.paint
@@ -52,6 +59,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
+import com.cc221042.shutterscout.Place
 
 
 @Composable
@@ -62,7 +70,22 @@ fun HomeScreen(
     goldenHourViewModel: GoldenHourViewModel = viewModel()
 ) {
     val weatherData by weatherViewModel.weatherData.collectAsState()
-    val countdownValue by goldenHourViewModel.countdownValue.collectAsState()
+    val countdownValue by goldenHourViewModel.timeToNextGoldenHour.collectAsState()
+
+    if (weatherData != null) {
+        val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
+
+        // Now you can use `currentConditions` to display the data.
+    } else {
+        // Display a loading indicator or handle the case when weather data is not available yet.
+    }
+
+    val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
+
+    val matchingPlaces by mainViewModel.allPlacesWithConditionsMet.collectAsState()
+
+
+
 
 
         val lexend = FontFamily(Font(R.font.lexend))
@@ -254,22 +277,50 @@ fun HomeScreen(
                     .padding(top = 20.dp)
                     .padding(start = 12.dp)
             )
-            Row(
+            Text(
+                text = "Current Conditions: ${currentConditions?.joinToString(", ")}",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF222222),
+                ),
                 modifier = Modifier
-                    .padding(top=12.dp)
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, top = 20.dp)
+            )
+//            Row(
+//                modifier = Modifier
+//                    .padding(top=12.dp)
+//            ) {
+//                Box(Modifier.padding(start = 12.dp)) {}
+//                HomeSuggestionCard("Mountains") {}
+//                Box(Modifier.padding(start = 12.dp)) {}
+//                HomeSuggestionCard("Lake") {""}
+//                Box(Modifier.padding(start = 12.dp)) {}
+//                HomeSuggestionCard("Lighthouse") {}
+//            }
+            LazyRow(
+                modifier = Modifier
+                    .padding(top = 12.dp, start = 12.dp)
+                    .fillMaxWidth()
             ) {
-                Box(Modifier.padding(start = 12.dp)) {}
-                HomeSuggestionCard("Mountains") {}
-                Box(Modifier.padding(start = 12.dp)) {}
-                HomeSuggestionCard("Lake") {""}
-                Box(Modifier.padding(start = 12.dp)) {}
-                HomeSuggestionCard("Lighthouse") {}
+
+                itemsIndexed(matchingPlaces) { index, place ->
+                    HomeSuggestionCard(place.title) {
+                        // Handle click action if needed
+                    }
+                    if (index < matchingPlaces.size - 1) {
+                        Spacer(Modifier.width(12.dp)) // Add spacing between items
+                    }
+                }
             }
 
 
-            }
-            }
+
         }
+    }
+}
 
 
 

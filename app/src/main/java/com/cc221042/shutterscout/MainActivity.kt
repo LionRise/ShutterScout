@@ -42,13 +42,15 @@ class MainActivity : ComponentActivity() {
             .addMigrations(MIGRATION_1_2) // Add the migration
             .build()
     }
+    val weatherMeteosourceService = WeatherMeteosourceService.create()
+    val weatherRepository = WeatherRepository(weatherMeteosourceService)
 
     // Initialize the MainViewModel using the Room database
     private val mainViewModel by viewModels<MainViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return MainViewModel(db.dao) as T
+                    return MainViewModel(db.dao, weatherRepository) as T
                 }
             }
         }

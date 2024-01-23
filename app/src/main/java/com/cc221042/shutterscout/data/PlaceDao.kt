@@ -43,7 +43,7 @@ interface PlaceDao {
      * @return A Flow emitting a list of places.
      */
     @Query("SELECT * FROM places")
-    fun getPlaces(): Flow<List<Place>>
+    suspend fun getPlaces(): List<Place>
 
     /**
      * Retrieves a single place from the database using Flow.
