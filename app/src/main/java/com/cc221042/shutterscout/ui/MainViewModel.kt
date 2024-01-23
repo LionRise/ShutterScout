@@ -107,15 +107,15 @@ class MainViewModel(
             Log.d("MainViewModel", "getPlaces starts")
             viewModelScope.launch(coroutineExceptionHandler) {
                 val allPlaces = dao.getPlaces()
-                    Log.d(
-                        "MainViewModel",
-                        "Before updating state in getPlaces: ${_mainViewState.value}"
-                    )
-                    _mainViewState.update { it.copy(places = allPlaces) }
-                    Log.d(
-                        "MainViewModel",
-                        "After updating state in getPlaces: ${_mainViewState.value}"
-                    )
+                Log.d(
+                    "MainViewModel",
+                    "Before updating state in getPlaces: ${_mainViewState.value}"
+                )
+                _mainViewState.update { it.copy(places = allPlaces) }
+                Log.d(
+                    "MainViewModel",
+                    "After updating state in getPlaces: ${_mainViewState.value}"
+                )
                 }
 
         }
