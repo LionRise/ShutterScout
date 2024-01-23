@@ -21,10 +21,11 @@ import com.cc221042.shutterscout.data.WeatherMeteosourceService
 import com.cc221042.shutterscout.data.WeatherRepository
 import com.cc221042.shutterscout.data.secrets
 import com.cc221042.shutterscout.ui.GoldenHourViewModel
+import com.cc221042.shutterscout.ui.MapViewModel
+import com.cc221042.shutterscout.ui.MapViewModelFactory
 import com.cc221042.shutterscout.ui.WeatherViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModelFactory
 import com.cc221042.shutterscout.ui.theme.ShutterScoutTheme
-import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
 
@@ -35,11 +36,20 @@ class MainActivity : ComponentActivity() {
             db.execSQL("ALTER TABLE places ADD COLUMN condition TEXT NOT NULL DEFAULT ''")
         }
     }
+    // Define the migration from version 2 to 3
+    val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // SQL statement to add the 'langitude' and longitude column to the 'places' table
+            db.execSQL("ALTER TABLE places ADD COLUMN longitude REAL DEFAULT NULL")
+            db.execSQL("ALTER TABLE places ADD COLUMN latitude REAL DEFAULT NULL")
+        }
+    }
 
     // Lazy initialization of the Room database
     private val db by lazy {
         Room.databaseBuilder(this, PlaceDB::class.java, "PlaceDB.db")
             .addMigrations(MIGRATION_1_2) // Add the migration
+            .addMigrations(MIGRATION_2_3) // Add the migration
             .build()
     }
     val weatherMeteosourceService = WeatherMeteosourceService.create()
@@ -56,21 +66,26 @@ class MainActivity : ComponentActivity() {
         }
     )
 
+    private lateinit var mapViewModel: MapViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("DEBUG", "Test Log Message")
         super.onCreate(savedInstanceState)
 
         // Initialize WeatherMeteosourceService using the companion object's create method
         val weatherMeteosourceService = WeatherMeteosourceService.create()
-
         val weatherRepository = WeatherRepository(weatherMeteosourceService)
-
         val viewModelFactory = WeatherViewModelFactory(weatherRepository)
         val weatherViewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
+
         val goldenHourViewModel = ViewModelProvider(this).get(GoldenHourViewModel::class.java)
 
+        val dao = db.dao
+        val factory = MapViewModelFactory(dao)
+        mapViewModel = ViewModelProvider(this, factory).get(MapViewModel::class.java)
+
         // Load position data (for weather and golden hour)
-        val latitude: Double = 48.208176 // Replace with actual latitude
+        val latitude: Double = 70.208176 // Replace with actual latitude
         val longitude: Double = 16.373819 // Replace with actual longitude
 
         val sections: String = "all"
@@ -84,7 +99,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainView(mainViewModel, weatherViewModel, goldenHourViewModel)
+                    MainView(mainViewModel, weatherViewModel, goldenHourViewModel, mapViewModel)
                 }
             }
         }

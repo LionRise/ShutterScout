@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cc221042.shutterscout.ui.composables.AddPlaceButton
 import com.cc221042.shutterscout.ui.screens.HomeScreen
+import com.cc221042.shutterscout.ui.screens.MapScreen
 import com.cc221042.shutterscout.ui.screens.PlacesScreen
 import com.cc221042.shutterscout.ui.screens.WeatherDisplay
 
@@ -47,7 +48,7 @@ enum class BottomNavScreen(val route: String, val icon: ImageVector, val content
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainView(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, goldenViewModel: GoldenHourViewModel) {
+fun MainView(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, goldenViewModel: GoldenHourViewModel, mapViewModel: MapViewModel) {
     val state = mainViewModel.mainViewState.collectAsState()
     val navController = rememberNavController()
 
@@ -77,21 +78,21 @@ fun MainView(mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, g
                 }
             }
         }
-    ) { innerPadding -> MainNavHost(navController, mainViewModel, weatherViewModel, goldenViewModel, innerPadding) }
+    ) { innerPadding -> MainNavHost(navController, mainViewModel, weatherViewModel, goldenViewModel, mapViewModel, innerPadding) }
 }
 
 
 @Composable
-fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, goldenViewModel: GoldenHourViewModel, innerPadding: PaddingValues) {
+fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, weatherViewModel: WeatherViewModel, goldenViewModel: GoldenHourViewModel, mapViewModel: MapViewModel, innerPadding: PaddingValues) {
     NavHost(
         navController = navController,
         modifier = Modifier.padding(innerPadding),
         startDestination = Screen.First.route
     ) {
         composable(Screen.First.route) { HomeScreen(mainViewModel, weatherViewModel) }
-        composable(Screen.Second.route) { PlacesScreen(mainViewModel) }
+        composable(Screen.Second.route) { MapScreen(places = mapViewModel.places) }
         composable(Screen.Third.route) { WeatherDisplay(weatherViewModel) }
-//        composable(Screen.Fourth.route) { GoldenHourScreen(goldenViewModel) }
+        composable(Screen.Fourth.route) { PlacesScreen(mainViewModel) }
         composable(Screen.AddPlace.route) { AddPlaceScreen(mainViewModel) }
     }
 }

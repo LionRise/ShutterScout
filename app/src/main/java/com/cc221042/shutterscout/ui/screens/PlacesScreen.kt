@@ -121,6 +121,21 @@ fun PlacesScreen(mainViewModel: MainViewModel){
                             fontSize = 18.sp
                         )
                     )
+                    Text(
+                        text = place.condition,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp
+                        )
+                    )
+                    // langitude and longitude
+                    Text(
+                        text = "lat: ${place.latitude}, lon: ${place.longitude}",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp
+                        )
+                    )
                     AsyncImage(
                         modifier = Modifier
                             .size(250.dp),

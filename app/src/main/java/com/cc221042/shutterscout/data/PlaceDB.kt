@@ -19,7 +19,7 @@ import com.cc221042.shutterscout.Place
 //])
 
 
-@Database(entities = [Place::class], version = 1)
+@Database(entities = [Place::class], version = 3)
 abstract class PlaceDB : RoomDatabase() {
     abstract val dao: PlaceDao
 }
