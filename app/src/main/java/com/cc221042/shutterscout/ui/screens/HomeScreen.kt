@@ -307,7 +307,7 @@ fun HomeScreen(
             ) {
 
                 itemsIndexed(matchingPlaces) { index, place ->
-                    HomeSuggestionCard(place.title) {
+                    HomeSuggestionCard(place.title, place.imageUri) {
                         // Handle click action if needed
                     }
                     if (index < matchingPlaces.size - 1) {
