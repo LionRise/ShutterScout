@@ -3,6 +3,7 @@ package com.cc221042.shutterscout.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,23 +53,6 @@ fun HomeScreen(
     val matchingPlaces by mainViewModel.allPlacesWithConditionsMet.collectAsState()
     val currentConditions by mainViewModel.currentConditions.collectAsState()
 
-
-//    if (weatherData != null) {
-//        val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
-//
-//        // Now you can use `currentConditions` to display the data.
-//    } else {
-//        // Display a loading indicator or handle the case when weather data is not available yet.
-//    }
-
-//    val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
-
-//    val matchingPlaces by mainViewModel.allPlacesWithConditionsMet.collectAsState()
-
-
-
-
-
         val lexend = FontFamily(Font(R.font.lexend))
 
         // background color box
@@ -87,11 +71,7 @@ fun HomeScreen(
                 )
                 .width(361.dp)
                 .height(120.dp)
-//        Image(
-//            painter = imagePainter,
-//            contentDescription = "Local image",
-//            modifier = imageModifier
-//        )
+
 
             // background image box
             Box(modifier = Modifier
@@ -130,9 +110,8 @@ fun HomeScreen(
             ) {
 
                 HomeGoldenHourBox(countdownValue)
-
+                Spacer(modifier = Modifier.height(20.dp))
                 WeatherCurrentBox(weatherData = weatherData)
-                
                 WeatherSuggestionBox(currentConditions = currentConditions , matchingPlaces = matchingPlaces)
 
             
