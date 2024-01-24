@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -31,6 +32,11 @@ fun ConditionsRadio(name: String, icon_name: String, isSelected: Boolean, onClic
         modifier = Modifier
             .width(60.dp)
             .height(60.dp)
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(10.dp),
+                clip = true
+            )
             .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(10.dp))
             .clip(RoundedCornerShape(10.dp))
             .border(

@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -130,6 +131,11 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 //                        .padding(horizontal = 12.dp)
                         .fillMaxWidth()
                         .height(138.dp)
+                        .shadow(
+                            elevation = 3.dp,
+                            shape = RoundedCornerShape(10.dp),
+                            clip = true
+                        )
 
 
                 ) {
@@ -165,7 +171,7 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 
         Spacer(modifier = Modifier.height(50.dp))
 
-// Go back box
+        // Go back box
         Button(
             onClick = {
                 val latitude = latitudeText.toDoubleOrNull()
@@ -173,13 +179,20 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                 mainViewModel.save(Place(title, condition, imageUri, latitude, longitude))
                 saveSuccess = true // Update the state to reflect save success
             },
+
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFCB6E17)),
             modifier = Modifier
                 .padding(top = 12.dp)
                 .width(130.dp)
                 .height(40.dp)
-                .height(138.dp),
+//                .height(138.dp)
+                .shadow(
+                    elevation = 3.dp,
+                    shape = RoundedCornerShape(10.dp),
+                    clip = true
+                ),
+
 //                    enabled = title.isNotBlank() && condition.isNotBlank()
         ) {
             Text(
@@ -236,6 +249,11 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                 ),
                 modifier = Modifier
                     .padding(top = 8.dp) // Decreased padding
+                    .shadow(
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        clip = true
+                    )
             )
             //input for latitude
             TextField(

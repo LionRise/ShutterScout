@@ -30,6 +30,11 @@ fun IconRadio(name: String, isSelected: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .width(60.dp)
             .height(60.dp)
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(10.dp),
+                clip = true
+            )
             .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(10.dp))
             .clip(RoundedCornerShape(10.dp))
             .border(
