@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.cc221042.shutterscout.R
 // for the gradient
 import com.cc221042.shutterscout.ui.Corner
+import com.cc221042.shutterscout.ui.customShadowLayered
 import com.cc221042.shutterscout.ui.gradientBackground
 
 @Composable
@@ -28,15 +30,17 @@ fun HomeGoldenHourBox(countdownTime: String) {
     // Golden hour box
     Box(
         modifier = Modifier
-            .shadow(
-                elevation = 10.dp,
-                spotColor = Color(0x40000000),
-                ambientColor = Color(0x40000000)
-            )
+
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
             .padding(top = 80.dp)
             .height(82.dp)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(10.dp),
+                clip = true
+            )
+//            .customShadowLayered(Color.Red, 0.dp, 10.dp, 10.dp)
             //.gradientBackground(listOf(Color.Red, Color.Green), angle = 45f, 10.dp)
             .gradientBackground(
                 colors = listOf(Color(0xFFDE911D), Color(0xFFF0B429)),
@@ -45,6 +49,7 @@ fun HomeGoldenHourBox(countdownTime: String) {
                 startCorner = Corner.TOP_LEFT,
                 endCorner = Corner.BOTTOM_RIGHT
             )
+
 
 
 

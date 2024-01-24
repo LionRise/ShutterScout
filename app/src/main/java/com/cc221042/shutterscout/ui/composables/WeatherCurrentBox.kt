@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -28,10 +29,16 @@ fun WeatherCurrentBox(weatherData: WeatherResponse?) {
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
             .height(134.dp)
+            .shadow(
+                elevation = 3.dp,
+                shape = RoundedCornerShape(10.dp),
+                clip = true
+            )
             .background(
                 color = Color(0xFFF6F6F6),
                 shape = RoundedCornerShape(size = 10.dp)
             )
+
     ) {
         Text(
             text = "Current weather",

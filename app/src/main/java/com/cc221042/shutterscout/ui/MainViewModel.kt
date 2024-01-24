@@ -76,9 +76,6 @@ class MainViewModel(
 //            getPlacesMatchingConditions(weatherViewModel, goldenHourViewModel)
             fetchWeatherAndDetermineConditions()
 
-        // Fetch all places initially
-//        fetchAllPlaces()
-//        getPlacesMatchingConditions(weatherViewModel, goldenHourViewModel)
 
     }
 

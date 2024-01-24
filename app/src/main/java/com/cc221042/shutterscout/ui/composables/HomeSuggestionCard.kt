@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -46,6 +47,12 @@ fun HomeSuggestionCard(name: String, imageUrl: String, onClick: () -> Unit){
             modifier = Modifier
                 .width(110.dp)
                 .height(159.dp)
+
+                .shadow(
+                    elevation = 1.dp,
+                    shape = RoundedCornerShape(10.dp),
+                    clip = true
+                )
                 .clip(RoundedCornerShape(10.dp))
                 .background(
                     Color.LightGray,
@@ -57,7 +64,8 @@ fun HomeSuggestionCard(name: String, imageUrl: String, onClick: () -> Unit){
             Image(
                 painter = imagePainter,
                 contentDescription = null, // Provide a suitable content description
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier
+                    .matchParentSize(),
                 contentScale = ContentScale.Crop // Or any other ContentScale that suits your need
             )
 
