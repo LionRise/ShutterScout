@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.cc221042.shutterscout.Place
 import com.cc221042.shutterscout.data.PlaceDao
 import com.cc221042.shutterscout.data.WeatherCurrentWeather
+import com.cc221042.shutterscout.data.WeatherDB
 import com.cc221042.shutterscout.data.WeatherHourlyForecast
 import com.cc221042.shutterscout.data.WeatherRepository
 import com.cc221042.shutterscout.data.WeatherResponse
@@ -25,15 +26,18 @@ import java.time.LocalDateTime
 
 
 class MainViewModel(
-    private val dao: PlaceDao, private val weatherRepository: WeatherRepository): ViewModel() {
+
+    private val dao: PlaceDao,
+    private val weatherRepository: WeatherRepository,
+    private val weatherDB: WeatherDB
+): ViewModel() {
 
     private val _placeState = MutableStateFlow(Place("", "", "", 0.0, 0.0))
     val placeState: StateFlow<Place> = _placeState.asStateFlow()
     private val _mainViewState = MutableStateFlow(MainViewState())
     val mainViewState: StateFlow<MainViewState> = _mainViewState.asStateFlow()
     private var inSearchMode = false
-
-    private val weatherViewModel = WeatherViewModel(weatherRepository)
+    private val weatherViewModel = WeatherViewModel(weatherRepository, weatherDB)
     private val goldenHourViewModel = GoldenHourViewModel()
 
     // New state for all places

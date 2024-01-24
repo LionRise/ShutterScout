@@ -16,8 +16,12 @@
     import kotlinx.coroutines.launch
     import java.util.logging.Logger;
     import android.util.Log
+    import com.cc221042.shutterscout.data.WeatherDB
 
-    class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
+    class WeatherViewModel(
+        private val weatherRepository: WeatherRepository,
+        private val db: WeatherDB
+    ) : ViewModel() {
 
         // MutableStateFlow to internally manage weather data
         private val _weatherData = MutableStateFlow<WeatherResponse?>(null)
@@ -27,18 +31,29 @@
 
         // Function to fetch weather data
         fun loadWeather(latitude: Double, longitude: Double, sections: String, apiToken: String) {
-            print("load")
-            Log.d("DEBUG", "load")
             viewModelScope.launch {
-
-                Log.d("DEBUG", "launch")
                 try {
-                    _weatherData.value = weatherRepository.getWeather(latitude, longitude, sections, apiToken)
-
-                }catch (e:Exception){
-                    print(e)
+                    // First, try to get the cached data
+                    val cachedWeather = db.weatherDao().getCachedWeatherResponse()
+                    if (cachedWeather == null || isCacheStale(cachedWeather)) {
+                        // Cache is stale or non-existent, fetch new data
+                        val freshData = weatherRepository.getWeather(latitude, longitude, sections, apiToken)
+                        db.weatherDao().insert(freshData)  // Cache the fresh data
+                        _weatherData.value = freshData  // Update the UI with fresh data
+                    } else {
+                        // Cache is fresh, use the cached data
+                        _weatherData.value = cachedWeather
+                    }
+                } catch (e: Exception) {
+                    Log.e("WeatherViewModel", "Error fetching weather data", e)
+                    // Handle error, update UI accordingly
                 }
-
             }
+        }
+
+        // Check if the cached data is stale
+        private fun isCacheStale(weatherResponse: WeatherResponse): Boolean {
+            // Implement your logic to determine if the cache is stale
+            return true // Placeholder, replace with your logic
         }
     }

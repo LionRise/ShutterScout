@@ -15,6 +15,7 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cc221042.shutterscout.data.PlaceDB
+import com.cc221042.shutterscout.data.WeatherDB
 import com.cc221042.shutterscout.ui.MainView
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.data.WeatherMeteosourceService
@@ -52,15 +53,25 @@ class MainActivity : ComponentActivity() {
             .addMigrations(MIGRATION_2_3) // Add the migration
             .build()
     }
+
+    // Lazy initialization of the WeatherDB
+    private val weatherDB by lazy {
+        Room.databaseBuilder(this, WeatherDB::class.java, "WeatherDB.db")
+            // Add any necessary migrations for WeatherDB
+            .build()
+    }
+
+
     val weatherMeteosourceService = WeatherMeteosourceService.create()
     val weatherRepository = WeatherRepository(weatherMeteosourceService)
+
 
     // Initialize the MainViewModel using the Room database
     private val mainViewModel by viewModels<MainViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return MainViewModel(db.dao, weatherRepository) as T
+                    return MainViewModel(db.dao, weatherRepository, weatherDB) as T
                 }
             }
         }
@@ -75,7 +86,7 @@ class MainActivity : ComponentActivity() {
         // Initialize WeatherMeteosourceService using the companion object's create method
         val weatherMeteosourceService = WeatherMeteosourceService.create()
         val weatherRepository = WeatherRepository(weatherMeteosourceService)
-        val viewModelFactory = WeatherViewModelFactory(weatherRepository)
+        val viewModelFactory = WeatherViewModelFactory(weatherRepository, weatherDB)
         val weatherViewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
 
         val goldenHourViewModel = ViewModelProvider(this).get(GoldenHourViewModel::class.java)
