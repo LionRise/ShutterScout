@@ -1,48 +1,29 @@
 package com.cc221042.shutterscout.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,16 +31,9 @@ import com.cc221042.shutterscout.R
 import com.cc221042.shutterscout.ui.GoldenHourViewModel
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.WeatherViewModel
-import com.cc221042.shutterscout.ui.composables.AddPlaceButton
 import com.cc221042.shutterscout.ui.composables.HomeGoldenHourBox
-import com.cc221042.shutterscout.ui.composables.HomeSuggestionCard
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
-import com.cc221042.shutterscout.Place
+import com.cc221042.shutterscout.ui.composables.WeatherCurrentBox
+import com.cc221042.shutterscout.ui.composables.WeatherSuggestionBox
 
 
 @Composable
@@ -69,20 +43,27 @@ fun HomeScreen(
     weatherViewModel: WeatherViewModel = viewModel(),
     goldenHourViewModel: GoldenHourViewModel = viewModel()
 ) {
+//    val weatherData by weatherViewModel.weatherData.collectAsState()
+//    val countdownValue by goldenHourViewModel.countdownValue.collectAsState()
+
+    // Observe the weather data and place matching conditions from the ViewModel
     val weatherData by weatherViewModel.weatherData.collectAsState()
     val countdownValue by goldenHourViewModel.countdownValue.collectAsState()
-
-    if (weatherData != null) {
-        val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
-
-        // Now you can use `currentConditions` to display the data.
-    } else {
-        // Display a loading indicator or handle the case when weather data is not available yet.
-    }
-
-    val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
-
     val matchingPlaces by mainViewModel.allPlacesWithConditionsMet.collectAsState()
+    val currentConditions by mainViewModel.currentConditions.collectAsState()
+
+
+//    if (weatherData != null) {
+//        val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
+//
+//        // Now you can use `currentConditions` to display the data.
+//    } else {
+//        // Display a loading indicator or handle the case when weather data is not available yet.
+//    }
+
+//    val currentConditions = mainViewModel.getCurrentConditions(weatherViewModel, goldenHourViewModel)
+
+//    val matchingPlaces by mainViewModel.allPlacesWithConditionsMet.collectAsState()
 
 
 
@@ -150,171 +131,11 @@ fun HomeScreen(
 
                 HomeGoldenHourBox(countdownValue)
 
-                // Current weather box
-                Box(
+                WeatherCurrentBox(weatherData = weatherData)
+                
+                WeatherSuggestionBox(currentConditions = currentConditions , matchingPlaces = matchingPlaces)
 
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 20.dp)
-
-                        .height(134.dp)
-                        .background(
-                            color = Color(0xFFF6F6F6),
-                            shape = RoundedCornerShape(size = 10.dp)
-                        )
-                ) {
-                    Text(
-                        text = "Current weather",
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            lineHeight = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.lexend)),
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFF515151),
-                        ),
-                        modifier = Modifier
-                            .padding(start = 12.dp, top = 12.dp)
-                    )
-
-                    val weatherData by weatherViewModel.weatherData.collectAsState()
-                    weatherData?.let { data ->
-
-                        val weatherDescription = data.current.temperature
-
-                        Text(
-                            text = "$weatherDescription°C",
-                            style = TextStyle(
-                                fontSize = 24.sp,
-                                lineHeight = 24.sp,
-//                        fontFamily = FontFamily(Font(R.font.roboto)),
-                                fontWeight = FontWeight(400),
-                                color = Color(0xFF222222),
-                            ),
-                            modifier = Modifier
-                                .padding(start = 12.dp, top = 38.dp)
-                        )
-                    } ?: Text(
-                        text = "-",
-                        style = TextStyle(
-                            fontSize = 24.sp,
-                            lineHeight = 24.sp,
-//                        fontFamily = FontFamily(Font(R.font.roboto)),
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFF222222),
-                        ),
-                        modifier = Modifier
-                            .padding(start = 12.dp, top = 38.dp)
-                    )
-                    // Summary
-                    weatherData?.let { data ->
-
-                        val weatherDescription = data.current.summary
-
-                        Text(
-                            text = "$weatherDescription",
-                            style = TextStyle(
-                                fontSize = 20.sp,
-                                lineHeight = 20.sp,
-                                fontWeight = FontWeight(400),
-                                color = Color(0xFF515151),
-                            ),
-                            modifier = Modifier
-                                .padding(start = 12.dp, top = 72.dp)
-                        )
-                    } ?: Text(
-                        text = "-",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFF515151),
-                        ),
-                        modifier = Modifier
-                            .padding(start = 12.dp, top = 72.dp)
-                    )
-                    // Cloud cover
-                    weatherData?.let { data ->
-
-                        val weatherDescription = data.current.cloud_cover
-
-                        Text(
-                            text = "$weatherDescription% clouds",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 16.sp,
-                                fontWeight = FontWeight(400),
-                                color = Color(0xFF7E7E7E),
-                            ),
-                            modifier = Modifier
-                                .padding(start = 12.dp, top = 103.dp)
-                        )
-                    } ?: Text(
-                        text = "-",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 16.sp,
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFF7E7E7E),
-                        ),
-                        modifier = Modifier
-                            .padding(start = 12.dp, top = 103.dp)
-
-                    )
-
-                }
-
-            // Suggestions box
-            Text(
-                text = "Suggestions",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.lexend)),
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFF515151),
-                ), modifier = Modifier
-                    .padding(top = 20.dp)
-                    .padding(start = 12.dp)
-            )
-            Text(
-                text = "Current Conditions: ${currentConditions?.joinToString(", ")}",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    lineHeight = 16.sp,
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFF222222),
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 20.dp)
-            )
-//            Row(
-//                modifier = Modifier
-//                    .padding(top=12.dp)
-//            ) {
-//                Box(Modifier.padding(start = 12.dp)) {}
-//                HomeSuggestionCard("Mountains") {}
-//                Box(Modifier.padding(start = 12.dp)) {}
-//                HomeSuggestionCard("Lake") {""}
-//                Box(Modifier.padding(start = 12.dp)) {}
-//                HomeSuggestionCard("Lighthouse") {}
-//            }
-            LazyRow(
-                modifier = Modifier
-                    .padding(top = 12.dp, start = 12.dp)
-                    .fillMaxWidth()
-            ) {
-
-                itemsIndexed(matchingPlaces) { index, place ->
-                    HomeSuggestionCard(place.title, place.imageUri) {
-                        // Handle click action if needed
-                    }
-                    if (index < matchingPlaces.size - 1) {
-                        Spacer(Modifier.width(12.dp)) // Add spacing between items
-                    }
-                }
-            }
+            
 
 
 

@@ -15,5 +15,7 @@ data class WeatherResponse(
     val units: String,
     val current: WeatherCurrentWeather,
     val hourly: WeatherHourlyForecast,
+    // for caching
+    var lastUpdated: Long
     //val daily: DailyForecast? // Assuming daily can be null
 )

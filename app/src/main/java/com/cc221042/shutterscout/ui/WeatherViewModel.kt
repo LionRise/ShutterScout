@@ -38,6 +38,7 @@
                     if (cachedWeather == null || isCacheStale(cachedWeather)) {
                         // Cache is stale or non-existent, fetch new data
                         val freshData = weatherRepository.getWeather(latitude, longitude, sections, apiToken)
+                        freshData.lastUpdated = System.currentTimeMillis()
                         db.weatherDao().insert(freshData)  // Cache the fresh data
                         _weatherData.value = freshData  // Update the UI with fresh data
                     } else {
@@ -53,7 +54,10 @@
 
         // Check if the cached data is stale
         private fun isCacheStale(weatherResponse: WeatherResponse): Boolean {
-            // Implement your logic to determine if the cache is stale
-            return true // Placeholder, replace with your logic
+            val currentTime = System.currentTimeMillis()
+            val lastUpdatedTime = weatherResponse.lastUpdated
+            val thirtyMinutesInMillis = 30 * 60 * 1000 // 30 minutes in milliseconds
+
+            return (currentTime - lastUpdatedTime) > thirtyMinutesInMillis
         }
     }

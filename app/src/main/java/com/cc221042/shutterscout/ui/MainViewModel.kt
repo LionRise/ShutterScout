@@ -53,6 +53,9 @@ class MainViewModel(
 
     var weatherResponseFromRepo: WeatherResponse? = null
 
+    private val _currentConditions = MutableStateFlow<List<String>>(emptyList())
+    val currentConditions: StateFlow<List<String>> = _currentConditions.asStateFlow()
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
         // Handle the exception, e.g., log it or update a LiveData/StateFlow
         Log.e("MainViewModel", "Exception in coroutine", exception)
@@ -70,7 +73,8 @@ class MainViewModel(
         }
 
             // Now you can safely call getPlacesMatchingConditions()
-            getPlacesMatchingConditions(weatherViewModel, goldenHourViewModel)
+//            getPlacesMatchingConditions(weatherViewModel, goldenHourViewModel)
+            fetchWeatherAndDetermineConditions()
 
         // Fetch all places initially
 //        fetchAllPlaces()
@@ -169,92 +173,136 @@ class MainViewModel(
         } ?: false
     }
     // Function to get places matching either current weather conditions or golden hour
-    private fun getPlacesMatchingConditions(
-        weatherViewModel: WeatherViewModel,
-        goldenHourViewModel: GoldenHourViewModel
-    ) {
+    private fun getPlacesMatchingConditions() {
         viewModelScope.launch(coroutineExceptionHandler) {
             val allPlaces = dao.getPlaces()
-            val currentConditions = getCurrentConditions(weatherViewModel, goldenHourViewModel)
-            Log.d("MainViewModel", "Current conditions: $currentConditions")
-            Log.d("MainViewModel", "All places count: ${allPlaces.size}")
-//            throw RuntimeException("Test Exception")
+            val conditions = currentConditions.value // Get the latest conditions
 
-            val filteredPlaces = currentConditions?.let { conditions ->
+            val filteredPlaces = conditions.let { conditionList ->
                 allPlaces.filter { place ->
-                    conditions.any { condition ->
-                        print(condition)
+                    conditionList.any { condition ->
                         place.condition.equals(condition, ignoreCase = true)
                     }
                 }
             } ?: allPlaces
 
-            // Correctly assign the filtered list to the state
             _allPlacesWithConditionsMetState.value = filteredPlaces
             Log.d("MainViewModel", "Filtered places count: ${filteredPlaces.size}")
         }
     }
 
-    fun getCurrentConditions(weatherViewModel: WeatherViewModel, goldenHourViewModel: GoldenHourViewModel): List<String>? {
-        //val weatherData = weatherViewModel.weatherData.value
+//    fun getCurrentConditions(weatherViewModel: WeatherViewModel, goldenHourViewModel: GoldenHourViewModel): List<String>? {
+//        //val weatherData = weatherViewModel.weatherData.value
+//
+//        // Load position data (for weather and golden hour)
+//        val latitude: Double = 48.208176 // Replace with actual latitude
+//        val longitude: Double = 16.373819 // Replace with actual longitude
+//
+//        val sections: String = "all"
+//        val apiToken = secrets.weatherAPI // Replace with your API token
+//
+//        loadWeather(latitude, longitude, sections, apiToken)
+//
+//        val weatherData = weatherResponseFromRepo
+//        val goldenHourTimes = goldenHourViewModel.goldenHourTimes.value
+//        val conditions = mutableListOf<String>()
+//
+//        if (weatherResponseFromRepo != null && goldenHourTimes != null) {
+//            val currentTime = LocalDateTime.now()
+//
+//            if (currentTime.isAfter(goldenHourTimes.morningStart) && currentTime.isBefore(goldenHourTimes.morningEnd)) {
+//                conditions.add("Sunrise")
+//            }
+//
+//            if (currentTime.isAfter(goldenHourTimes.eveningStart) && currentTime.isBefore(goldenHourTimes.eveningEnd)) {
+//                conditions.add("Sunset")
+//            }
+//
+//            // Check other weather conditions (you can add more conditions here)
+//            val weatherDescription = weatherData?.current?.summary
+//
+//            if (weatherDescription?.contains("cloudy", ignoreCase = true) == true) {
+//                conditions.add("Cloudy")
+//            }
+//            if (weatherDescription?.contains("rain", ignoreCase = true) == true) {
+//                conditions.add("Rain")
+//            }
+//            if (weatherDescription?.contains("snow", ignoreCase = true) == true) {
+//                conditions.add("Snow")
+//            }
+//            if (weatherDescription?.contains("thunder", ignoreCase = true) == true) {
+//                conditions.add("Thunder")
+//            }
+//            if (weatherDescription?.contains("fog", ignoreCase = true) == true) {
+//                conditions.add("Fog")
+//            }
+//            if (weatherDescription?.contains("overcast", ignoreCase = true) == true) {
+//                conditions.add("Overcast")
+//            }
+//            // Add more conditions as needed
+//        }
+//
+//        // If no conditions apply, return "Unknown"
+//        return if (conditions.isEmpty()) {
+////            listOf("Unknown")
+//            listOf("fog")
+//        } else {
+//            conditions
+//        }
+//    }
 
-        // Load position data (for weather and golden hour)
-        val latitude: Double = 48.208176 // Replace with actual latitude
-        val longitude: Double = 16.373819 // Replace with actual longitude
+    private fun fetchWeatherAndDetermineConditions() {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            val cachedWeather = weatherDB.weatherDao().getCachedWeatherResponse()
+            val weatherData = if (cachedWeather == null || isCacheStale(cachedWeather)) {
+                fetchFreshWeatherData()
+            } else {
+                cachedWeather
+            }
 
-        val sections: String = "all"
-        val apiToken = secrets.weatherAPI // Replace with your API token
+            _currentConditions.value = determineConditionsBasedOnWeatherData(weatherData)
+            getPlacesMatchingConditions()
+        }
+    }
 
-        loadWeather(latitude, longitude, sections, apiToken)
+    private suspend fun fetchFreshWeatherData(): WeatherResponse? {
+        return try {
+            val freshData = weatherRepository.getWeather(48.208176, 16.373819, "all", secrets.weatherAPI)
+            freshData.lastUpdated = System.currentTimeMillis()
+            weatherDB.weatherDao().insert(freshData)
+            freshData
+        } catch (e: Exception) {
+            Log.e("MainViewModel", "Error fetching weather data", e)
+            null
+        }
+    }
 
-        val weatherData = weatherResponseFromRepo
-        val goldenHourTimes = goldenHourViewModel.goldenHourTimes.value
+    private fun determineConditionsBasedOnWeatherData(weatherData: WeatherResponse?): List<String> {
         val conditions = mutableListOf<String>()
+        val currentTime = LocalDateTime.now()
 
-        if (weatherResponseFromRepo != null && goldenHourTimes != null) {
-            val currentTime = LocalDateTime.now()
+        // Example of checking weather conditions
+        weatherData?.let { data ->
+            // Check golden hour conditions based on currentTime and goldenHourTimes from data
+            // Add weather-based conditions like "Cloudy", "Rain", etc.
 
-            if (currentTime.isAfter(goldenHourTimes.morningStart) && currentTime.isBefore(goldenHourTimes.morningEnd)) {
-                conditions.add("Sunrise")
-            }
-
-            if (currentTime.isAfter(goldenHourTimes.eveningStart) && currentTime.isBefore(goldenHourTimes.eveningEnd)) {
-                conditions.add("Sunset")
-            }
-
-            // Check other weather conditions (you can add more conditions here)
-            val weatherDescription = weatherData?.current?.summary
-
-            if (weatherDescription?.contains("cloudy", ignoreCase = true) == true) {
+            // Example condition
+            if (data.current.summary.contains("cloudy", ignoreCase = true)) {
                 conditions.add("Cloudy")
-            }
-            if (weatherDescription?.contains("rain", ignoreCase = true) == true) {
-                conditions.add("Rain")
-            }
-            if (weatherDescription?.contains("snow", ignoreCase = true) == true) {
-                conditions.add("Snow")
-            }
-            if (weatherDescription?.contains("thunder", ignoreCase = true) == true) {
-                conditions.add("Thunder")
-            }
-            if (weatherDescription?.contains("fog", ignoreCase = true) == true) {
-                conditions.add("Fog")
-            }
-            if (weatherDescription?.contains("overcast", ignoreCase = true) == true) {
-                conditions.add("Overcast")
             }
             // Add more conditions as needed
         }
 
-        // If no conditions apply, return "Unknown"
-        return if (conditions.isEmpty()) {
-//            listOf("Unknown")
-            listOf("fog")
-        } else {
-            conditions
-        }
+        return if (conditions.isEmpty()) listOf("Unknown") else conditions
     }
 
+    private fun isCacheStale(weatherResponse: WeatherResponse): Boolean {
+        val thirtyMinutesInMillis = 30 * 60 * 1000 // 30 minutes in milliseconds
+        val lastUpdatedTime = weatherResponse.lastUpdated ?: return true
+        val currentTime = System.currentTimeMillis()
+
+        return (currentTime - lastUpdatedTime) > thirtyMinutesInMillis
+    }
     fun loadWeather(latitude: Double, longitude: Double, sections: String, apiToken: String) {
         print("load")
         Log.d("DEBUG", "load")
