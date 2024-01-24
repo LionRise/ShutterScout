@@ -260,7 +260,9 @@ class MainViewModel(
                 cachedWeather
             }
 
-            _currentConditions.value = determineConditionsBasedOnWeatherData(weatherData)
+            val goldenHourTimes = goldenHourViewModel.goldenHourTimes.value
+            _currentConditions.value = determineConditionsBasedOnWeatherData(weatherData, goldenHourTimes)
+
             getPlacesMatchingConditions()
         }
     }
@@ -277,9 +279,14 @@ class MainViewModel(
         }
     }
 
-    private fun determineConditionsBasedOnWeatherData(weatherData: WeatherResponse?): List<String> {
+    private fun determineConditionsBasedOnWeatherData(weatherData: WeatherResponse?, goldenHourTimes: GoldenHourViewModel.GoldenHourTimes?): List<String> {
         val conditions = mutableListOf<String>()
         val currentTime = LocalDateTime.now()
+
+        // Add Golden Hour condition if applicable
+        if (isItGoldenHour(goldenHourTimes)) {
+            conditions.add("Golden Hour")
+        }
 
         // Example of checking weather conditions
         weatherData?.let { data ->
@@ -293,6 +300,9 @@ class MainViewModel(
             // Add more conditions as needed
         }
 
+        //debug
+        conditions.add("fog")
+
         return if (conditions.isEmpty()) listOf("Unknown") else conditions
     }
 
@@ -302,21 +312,6 @@ class MainViewModel(
         val currentTime = System.currentTimeMillis()
 
         return (currentTime - lastUpdatedTime) > thirtyMinutesInMillis
-    }
-    fun loadWeather(latitude: Double, longitude: Double, sections: String, apiToken: String) {
-        print("load")
-        Log.d("DEBUG", "load")
-        viewModelScope.launch(coroutineExceptionHandler) {
-
-            Log.d("DEBUG", "launch")
-            try {
-//                _weatherDataState.value = weatherRepository.getWeather(latitude, longitude, sections, apiToken)
-                weatherResponseFromRepo = weatherRepository.getWeather(latitude, longitude, sections, apiToken)
-            }catch (e:Exception){
-                print(e)
-            }
-
-        }
     }
 
 }
