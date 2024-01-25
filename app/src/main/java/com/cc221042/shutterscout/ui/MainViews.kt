@@ -113,7 +113,7 @@ fun MainNavHost(navController: NavHostController, mainViewModel: MainViewModel, 
         composable(Screen.Second.route) { MapScreen(places = mapViewModel.places) }
         composable(Screen.Third.route) { WeatherDisplay(weatherViewModel) }
         composable(Screen.Fourth.route) { PlacesScreen(mainViewModel) }
-        composable(Screen.AddPlace.route) { AddPlaceScreen(mainViewModel) }
+        composable(Screen.AddPlace.route) { AddPlaceScreen(navController, mainViewModel) }
     }
 }
 

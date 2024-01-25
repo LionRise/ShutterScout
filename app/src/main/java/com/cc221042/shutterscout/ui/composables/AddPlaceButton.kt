@@ -27,23 +27,13 @@ import com.cc221042.shutterscout.ui.gradientBackground
 @Composable
 fun AddPlaceButton(navController: NavHostController, onClick: () -> Unit) {
     ExtendedFloatingActionButton(
-        modifier = Modifier
-//            .gradientBackground(
-//                colors = listOf(Color(0xFFDE911D), Color(0xFFF0B429)),
-//
-//                cornerRadius = 10.dp,
-//                startCorner = Corner.BOTTOM_LEFT,
-//                endCorner = Corner.TOP_RIGHT
-//            ),
-        ,
-        // TODO make gradient
+        modifier = Modifier,
         containerColor = Color(0xFF1992D4),
 
         onClick = {
             onClick() // Existing logic
             navController.navigate(Screen.AddPlace.route) // Navigate to AddPlaceScreen
         },
-//        icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
         icon = { Text(
             text = "map-marker-plus",
             style = TextStyle(

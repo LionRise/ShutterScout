@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -27,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,15 +40,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.cc221042.shutterscout.R
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.EditPlaceModal
 import kotlinx.coroutines.delay
@@ -56,6 +63,8 @@ fun PlacesScreen(mainViewModel: MainViewModel){
     val state = mainViewModel.mainViewState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var lastSearchQuery by remember { mutableStateOf("") }
+
+    val lexend = FontFamily(Font(R.font.lexend))
 
     // Initial Data Load
     LaunchedEffect(Unit) {
@@ -79,7 +88,7 @@ fun PlacesScreen(mainViewModel: MainViewModel){
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         item {
             TextField(
@@ -88,13 +97,28 @@ fun PlacesScreen(mainViewModel: MainViewModel){
                 label = { Text("Search") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                    .shadow(
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        clip = true
+                    )
+                    .background(
+                        color = Color(0xFFF6F6F6),
+                        shape = RoundedCornerShape(size = 10.dp)
+                    ),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.LightGray, // Background color of the TextField
+                    focusedIndicatorColor = Color.Transparent, // Color of the indicator below the TextField when focused
+                    unfocusedIndicatorColor = Color.Transparent, // Color of the indicator below the TextField when not focused
+                )
             )
             Text(
-                text = "Places",
+                text = "Your saved Places",
                 fontWeight = FontWeight.Bold,
-                fontSize = 50.sp,
-                style = TextStyle(fontFamily = FontFamily.Cursive),
+                fontSize = 30.sp,
+                style = TextStyle(fontFamily = lexend),
+                color = Color(0xFF565656),
                 modifier = Modifier.padding(16.dp)
             )
         }

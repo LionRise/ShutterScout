@@ -1,5 +1,7 @@
 package com.cc221042.shutterscout.ui
 
+import android.content.Context
+import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +26,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okio.IOException
 import java.time.LocalDateTime
 
 
@@ -35,7 +39,7 @@ class MainViewModel(
     private val sunriseSunsetRepository: SunriseSunsetRepository
 ): ViewModel() {
 
-    private val _placeState = MutableStateFlow(Place("", "", "", 0.0, 0.0))
+    private val _placeState = MutableStateFlow(Place("", "", "", "",0.0, 0.0))
     val placeState: StateFlow<Place> = _placeState.asStateFlow()
     private val _mainViewState = MutableStateFlow(MainViewState())
     val mainViewState: StateFlow<MainViewState> = _mainViewState.asStateFlow()
@@ -95,6 +99,34 @@ class MainViewModel(
             _allPlacesState.value = allPlaces
         }
     }
+
+    fun getAddressLocation(context: Context, address: String, callback: (Double?, Double?) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val geocoder = Geocoder(context)
+                val addressResults = geocoder.getFromLocationName(address, 1)
+                if (addressResults != null) {
+                    if (addressResults.isNotEmpty()) {
+                        val location = addressResults.get(0)
+                        val latitude = location?.latitude
+                        val longitude = location?.longitude
+                        withContext(Dispatchers.Main) {
+                            callback(latitude, longitude)
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            callback(null, null)
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    callback(null, null)
+                }
+            }
+        }
+    }
+
 
     fun save(place: Place) {
         viewModelScope.launch(coroutineExceptionHandler) {

@@ -1,5 +1,6 @@
 package com.cc221042.shutterscout
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,6 +11,9 @@ data class Place(
     val title: String,
     // Column for storing the wanted weather conditions of the place
     val condition: String,
+    // Column for storing the icon that's displayed on the map
+    @ColumnInfo(defaultValue = "") // Replace DEFAULT_ICON_RES_ID with an actual drawable resource ID
+    val icon: String,
     // Column for storing the image Uri of the place if any
     val imageUri: String,
     // lat and lon position of the image

@@ -1,5 +1,6 @@
 package com.cc221042.shutterscout.ui.screens
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,14 +19,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,65 +60,98 @@ import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.setupPhotoPicker
 import com.cc221042.shutterscout.ui.gradientBackground
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.TextUnit
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.cc221042.shutterscout.ui.composables.ConditionsRadio
 import com.cc221042.shutterscout.ui.composables.ConditionsRow
 import com.cc221042.shutterscout.ui.composables.IconRadio
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPlaceScreen(mainViewModel: MainViewModel) {
-    var title by rememberSaveable { mutableStateOf("")}
+fun AddPlaceScreen(navController: NavController, mainViewModel: MainViewModel) {
+
+    var title by rememberSaveable { mutableStateOf("") }
     var condition by rememberSaveable { mutableStateOf("") }
     var imageUri by rememberSaveable { mutableStateOf("") }
     var saveSuccess by remember { mutableStateOf(false) }
 
-    // location extraction from image EXIF data
-    // we don't need
-    var latitudeText by rememberSaveable { mutableStateOf("") } // For user input
-    var longitudeText by rememberSaveable { mutableStateOf("") } // For user input
+    var address by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
 
     // map icon
     var icon by rememberSaveable { mutableStateOf("") }
-    icon = "map-marker-alt"
+    icon = "thumbtack"
 
     // conditions
     var conditions by rememberSaveable { mutableStateOf("") }
 
     val photoPicker = setupPhotoPicker { uri: Uri ->
         imageUri = uri.toString()
-        val latLong = getLatLongFromImageUri(context, uri)
-        //latitude = latLong.first
-        //longitude = latLong.second
     }
-
-    val gradientColors = listOf(Color(0xFFDE911D), Color(0xFFF0B429))
-
-    val diagonalGradientBrush = Brush.linearGradient(
-        colors = gradientColors,
-        start = Offset(0f, 0f), // Top left corner
-        end = Offset(100f, 100f) // Adjust for the desired diagonal effect
-    )
-
     Scaffold(
         containerColor = Color(0xFFF7F7F7),
-    ) {innerPadding ->
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Button(
+                onClick = {
+                    navController.popBackStack()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent, // Set the button background to transparent
+                    contentColor = Color(0xFF000000)
+                ),
+                modifier = Modifier
+                    .padding(top = 15.dp),
+            ) {
+                Text(
+                    text = "chevron-left",
+                    style = TextStyle(
+                        fontSize = 22.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.font_awesome)),
+                        fontWeight = FontWeight(400),
+                        color = Color(0xFF000000),
+                        textAlign = TextAlign.Start,
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.5f)) // This spacer will push the text to the center
+
+            Text(
+                text = "Add Place",
+                style = TextStyle(
+                    fontSize = 22.sp,
+                    lineHeight = 28.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF565656),
+                    textAlign = TextAlign.Center,
+                ), modifier = Modifier
+                    .padding(top = 18.dp)
+                    .weight(1f),
+            )
+            Spacer(modifier = Modifier.weight(1f)) // This spacer will push the text to the center
+
+        }
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
-
-//            verticalArrangement = Arrangement.Center,
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(
                 modifier = Modifier
-                    .padding(top = 38.dp)
+                    .padding(top = 68.dp)
                     .padding(horizontal = 12.dp)
                     .gradientBackground(
                         colors = listOf(Color(0xFFDE911D), Color(0xFFF0B429)),
@@ -122,7 +162,13 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 
             ) {
                 Button(
-                    onClick = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    onClick = {
+                        photoPicker.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    },
                     shape = RoundedCornerShape(10.dp),
                     // TODO add gradient
                     colors = ButtonDefaults.buttonColors(Color(0xFFF0B429)),
@@ -168,51 +214,9 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
             }
         }
 
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        // Go back box
-        Button(
-            onClick = {
-                val latitude = latitudeText.toDoubleOrNull()
-                val longitude = longitudeText.toDoubleOrNull()
-                mainViewModel.save(Place(title, condition, imageUri, latitude, longitude))
-                saveSuccess = true // Update the state to reflect save success
-            },
-
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFCB6E17)),
-            modifier = Modifier
-                .padding(top = 12.dp)
-                .width(130.dp)
-                .height(40.dp)
-//                .height(138.dp)
-                .shadow(
-                    elevation = 3.dp,
-                    shape = RoundedCornerShape(10.dp),
-                    clip = true
-                ),
-
-//                    enabled = title.isNotBlank() && condition.isNotBlank()
-        ) {
-            Text(
-                text = "Save",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 16.sp,
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFFF7F7F7),
-                )
-            )
-        }
-
-        if (saveSuccess) {
-            Text("Place saved successfully!", color = Color.Green)
-        }
-
         Column(
             modifier = Modifier
-                .padding(top = 244.dp, start = 12.dp)
+                .padding(start = 12.dp, top = 214.dp)
 
         ) {
             Text(
@@ -224,13 +228,11 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                     fontWeight = FontWeight(400),
                     color = Color(0xFF565656),
                 ), modifier = Modifier
-//                    .padding(top = 244.dp, start = 12.dp)
             )
-
 
             TextField(
                 value = title,
-
+                label = { Text("Name your place") },
                 onValueChange = { newText -> title = newText },
                 singleLine = true,
                 shape = RoundedCornerShape(10.dp),
@@ -249,24 +251,40 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                 ),
                 modifier = Modifier
                     .padding(top = 8.dp) // Decreased padding
-                    .shadow(
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(10.dp),
-                        clip = true
-                    )
-            )
-            //input for latitude
-            TextField(
-                value = latitudeText,
-                onValueChange = { newText -> latitudeText = newText },
-                label = { Text("Latitude") }
             )
 
-            TextField(
-                value = longitudeText,
-                onValueChange = { newText -> longitudeText = newText },
-                label = { Text("Longitude") }
+            Text(
+                text = "Address",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend)),
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF565656),
+                ), modifier = Modifier.padding(8.dp)
             )
+            TextField(
+                value = address,
+                onValueChange = { address = it },
+                label = { Text("Address of your place") },
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+
+
+                    ),
+                textStyle = TextStyle(
+
+                    color = Color.Black,
+                    // Adjust lineHeight if needed
+                    lineHeight = TextUnit.Unspecified
+                ),
+                modifier = Modifier
+            )
+
 
             Text(
                 text = "Icon on map",
@@ -282,7 +300,16 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
             )
 
             // Define your icons
-            val icons = listOf("map-marker-alt", "star", "heart", "mountain", "building", "university", "water", "tree")
+            val icons = listOf(
+                "map-marker-alt",
+                "star",
+                "heart",
+                "mountain",
+                "building",
+                "university",
+                "water",
+                "tree"
+            )
 
             // Split icons into two rows
             val firstRowIcons = icons.take(4)
@@ -315,7 +342,7 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
             }
 
             Text(
-                text = "Icon on map",
+                text = "Wanted Weather Condition",
 
                 style = TextStyle(
                     fontSize = 14.sp,
@@ -327,16 +354,27 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
                     .padding(top = 20.dp, bottom = 12.dp)
             )
 
-            val possible_conditions = listOf("sunrise", "sunset","midday", "clouds", "rain", "snow", "thunder", "fog")
-            val possible_conditions_icons = listOf("sunrise", "sunset", "sun", "cloud", "cloud-rain", "snowflake", "thunderstorm", "fog")
+            val possible_conditions = listOf(
+                "sunrise",
+                "sunset",
+                "midday",
+                "clouds",
+                "rain",
+                "snow",
+                "thunder",
+                "fog"
+            )
+            val possible_conditions_icons = listOf(
+                "sunrise",
+                "sunset",
+                "sun",
+                "cloud",
+                "cloud-rain",
+                "snowflake",
+                "thunderstorm",
+                "fog"
+            )
 
-
-
-//                TextField(
-//                    value = condition,
-//                    onValueChange = { newText -> condition = newText },
-//                    label = { Text("Condition of your place") }
-//                )
             // Split icons into two rows
             val firstRowConditionsIcons = possible_conditions_icons.take(4)
             val firstRowConditionsNames = possible_conditions.take(4)
@@ -363,8 +401,61 @@ fun AddPlaceScreen(mainViewModel: MainViewModel) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // TODO add gradient
+            Button(
+                onClick = {
+                    mainViewModel.getAddressLocation(
+                        context,
+                        address
+                    ) { latitude, longitude ->
+                        if (latitude != null && longitude != null) {
+                            mainViewModel.save(
+                                Place(
+                                    title,
+                                    condition,
+                                    icon,
+                                    imageUri,
+                                    latitude,
+                                    longitude
+                                )
+                            )
+                        } else {
+                            mainViewModel.save(
+                                Place(
+                                    title,
+                                    condition,
+                                    icon,
+                                    imageUri,
+                                    latitude,
+                                    longitude
+                                )
+                            )
+                        }
+                    }
+                    navController.popBackStack()
+                },
 
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFFCB6E17)),
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .width(130.dp)
+                    .height(40.dp)
+                    .shadow(
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        clip = true
+                    ),
+            ) {
+                Text(
+                    text = "Save",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        lineHeight = 16.sp,
+                        fontWeight = FontWeight(400),
+                        color = Color(0xFFF7F7F7),
+                    )
+                )
+            }
         }
     }
 }

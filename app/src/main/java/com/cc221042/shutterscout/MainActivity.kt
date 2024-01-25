@@ -48,11 +48,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Define the migration from version 3 to 4
+    val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // SQL statement to add the 'icon' column to the 'places' table
+            db.execSQL("ALTER TABLE places ADD COLUMN icon TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
     // Lazy initialization of the Room database
     private val db by lazy {
         Room.databaseBuilder(this, PlaceDB::class.java, "PlaceDB.db")
             .addMigrations(MIGRATION_1_2) // Add the migration
             .addMigrations(MIGRATION_2_3) // Add the migration
+            .addMigrations(MIGRATION_3_4) // Add the migration
             .build()
     }
 
