@@ -162,6 +162,7 @@
                     HomePhaseBox("Nautical twilight",nauticalTwilightBegin, nauticalTwilightEnd, Color(0xFF1992D4),Color(0xFF127FBF))
                     Spacer(modifier = Modifier.height(12.dp))
                     HomePhaseBox("Astronomical twilight",astronomicalTwilightBegin, astronomicalTwilightEnd, Color(0xFF0A558C),Color(0xFF003E6B))
+                    Spacer(modifier = Modifier.height(32.dp))
 
 
             }

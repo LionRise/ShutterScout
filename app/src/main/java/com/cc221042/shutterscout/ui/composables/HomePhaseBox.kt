@@ -52,7 +52,7 @@ fun HomePhaseBox(
             .padding(vertical = 16.dp)
 
         ) {
-            Canvas(modifier = Modifier.size(24.dp).align(Alignment.CenterVertically)) {
+            Canvas(modifier = Modifier.size(20.dp).align(Alignment.CenterVertically)) {
                 val gradient = Brush.linearGradient(
                     colors = listOf(startColor, endColor),
                     start = Offset.Zero,

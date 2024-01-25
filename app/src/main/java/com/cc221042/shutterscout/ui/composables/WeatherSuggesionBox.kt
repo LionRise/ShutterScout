@@ -38,18 +38,18 @@ fun WeatherSuggestionBox(
             .padding(start = 12.dp)
     )
 
-    Text(
-        text = "Current Conditions: ${currentConditions?.joinToString(", ") ?: "N/A"}",
-        style = TextStyle(
-            fontSize = 16.sp,
-            lineHeight = 16.sp,
-            fontWeight = FontWeight(400),
-            color = Color(0xFF222222),
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 12.dp, top = 20.dp)
-    )
+//    Text(
+//        text = "Current Conditions: ${currentConditions?.joinToString(", ") ?: "N/A"}",
+//        style = TextStyle(
+//            fontSize = 16.sp,
+//            lineHeight = 16.sp,
+//            fontWeight = FontWeight(400),
+//            color = Color(0xFF222222),
+//        ),
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(start = 12.dp, top = 20.dp)
+//    )
 
     LazyRow(
         modifier = Modifier
