@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cc221042.shutterscout.Place
 import com.cc221042.shutterscout.data.PlaceDao
+import com.cc221042.shutterscout.data.SunriseSunsetRepository
+import com.cc221042.shutterscout.data.SunriseSunsetResponse
 import com.cc221042.shutterscout.data.WeatherCurrentWeather
 import com.cc221042.shutterscout.data.WeatherDB
 import com.cc221042.shutterscout.data.WeatherHourlyForecast
@@ -29,7 +31,8 @@ class MainViewModel(
 
     private val dao: PlaceDao,
     private val weatherRepository: WeatherRepository,
-    private val weatherDB: WeatherDB
+    private val weatherDB: WeatherDB,
+    private val sunriseSunsetRepository: SunriseSunsetRepository
 ): ViewModel() {
 
     private val _placeState = MutableStateFlow(Place("", "", "", 0.0, 0.0))
@@ -56,6 +59,10 @@ class MainViewModel(
     private val _currentConditions = MutableStateFlow<List<String>>(emptyList())
     val currentConditions: StateFlow<List<String>> = _currentConditions.asStateFlow()
 
+    // sunriseSunset api
+    private val _sunriseSunset = MutableStateFlow<Result<SunriseSunsetResponse>?>(null)
+    val sunriseSunset: StateFlow<Result<SunriseSunsetResponse>?> = _sunriseSunset.asStateFlow()
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
         // Handle the exception, e.g., log it or update a LiveData/StateFlow
         Log.e("MainViewModel", "Exception in coroutine", exception)
@@ -75,6 +82,8 @@ class MainViewModel(
             // Now you can safely call getPlacesMatchingConditions()
 //            getPlacesMatchingConditions(weatherViewModel, goldenHourViewModel)
             fetchWeatherAndDetermineConditions()
+
+            fetchSunriseSunsetTimes(48.208176, 16.373819)
 
 
     }
@@ -309,6 +318,13 @@ class MainViewModel(
         val currentTime = System.currentTimeMillis()
 
         return (currentTime - lastUpdatedTime) > thirtyMinutesInMillis
+    }
+
+    fun fetchSunriseSunsetTimes(latitude: Double, longitude: Double, date: String = "today") {
+        viewModelScope.launch {
+            val result = sunriseSunsetRepository.getSunriseSunsetTimes(latitude, longitude, date)
+            _sunriseSunset.value = result
+        }
     }
 
 }

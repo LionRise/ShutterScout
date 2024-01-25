@@ -7,14 +7,14 @@ import retrofit2.http.Query
 // Define an interface for the Meteosource API endpoints
 interface WeatherMeteosourceService {
 
-    // Example endpoint to get weather data, adjust the endpoint and parameters as needed
+
     @GET("v1/free/point")
     suspend fun getWeather(
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("sections") sections: String,
         @Query("key") apiToken: String
-    ): WeatherResponse // Replace with your actual data model class
+    ): WeatherResponse
 
     companion object {
         // Base URL of the Meteosource API

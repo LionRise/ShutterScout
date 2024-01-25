@@ -15,6 +15,8 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cc221042.shutterscout.data.PlaceDB
+import com.cc221042.shutterscout.data.SunriseSunsetRepository
+import com.cc221042.shutterscout.data.SunriseSunsetService
 import com.cc221042.shutterscout.data.WeatherDB
 import com.cc221042.shutterscout.ui.MainView
 import com.cc221042.shutterscout.ui.MainViewModel
@@ -65,13 +67,16 @@ class MainActivity : ComponentActivity() {
     val weatherMeteosourceService = WeatherMeteosourceService.create()
     val weatherRepository = WeatherRepository(weatherMeteosourceService)
 
+    val sunriseSunsetService = SunriseSunsetService.create()
+    val sunriseSunsetRepository = SunriseSunsetRepository(sunriseSunsetService)
+
 
     // Initialize the MainViewModel using the Room database
     private val mainViewModel by viewModels<MainViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return MainViewModel(db.dao, weatherRepository, weatherDB) as T
+                    return MainViewModel(db.dao, weatherRepository, weatherDB, sunriseSunsetRepository) as T
                 }
             }
         }
@@ -90,6 +95,9 @@ class MainActivity : ComponentActivity() {
         val weatherViewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
 
         val goldenHourViewModel = ViewModelProvider(this).get(GoldenHourViewModel::class.java)
+
+        val sunriseSunsetService = SunriseSunsetService.create()
+        val sunriseSunsetRepository = SunriseSunsetRepository(sunriseSunsetService)
 
         val dao = db.dao
         val factory = MapViewModelFactory(dao)
