@@ -14,7 +14,7 @@ interface SunriseSunsetService {
         @Query("lat") latitude: Double,
         @Query("lng") longitude: Double,
         @Query("date") date: String = "today",
-        @Query("formatted") formatted: Int = 0
+        @Query("formatted") formatted: Int = 1
     ): SunriseSunsetResponse // Replace with your actual data model class
 
     companion object {

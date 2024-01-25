@@ -5,6 +5,9 @@ data class Results(
     val sunset: String,
     val solar_noon: String,
     val civil_twilight_begin: String,
+    val civil_twilight_end: String,
     val nautical_twilight_begin: String,
-    val astronomical_twilight_begin: String
+    val nautical_twilight_end: String,
+    val astronomical_twilight_begin: String,
+    val astronomical_twilight_end: String,
 )
