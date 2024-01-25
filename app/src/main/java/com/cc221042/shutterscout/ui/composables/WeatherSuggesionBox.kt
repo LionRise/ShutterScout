@@ -1,5 +1,7 @@
 package com.cc221042.shutterscout.ui.composables
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,18 +12,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.cc221042.shutterscout.Place
 import com.cc221042.shutterscout.R
 
+
 @Composable
 fun WeatherSuggestionBox(
-    currentConditions: List<String>?,
     matchingPlaces: List<Place>
 ) {
     Text(
@@ -57,8 +61,16 @@ fun WeatherSuggestionBox(
             .fillMaxWidth()
     ) {
         itemsIndexed(matchingPlaces) { index, place ->
-            HomeSuggestionCard(place.title, place.imageUri) {
-                // Handle click action if needed
+            val context = LocalContext.current
+            HomeSuggestionCard(
+                name = place.title,
+                imageUrl = place.imageUri,
+                latitude = place.latitude,
+                longitude = place.longitude
+            ) { lat, lon ->
+                val uri = "http://maps.google.com/maps?daddr=$lat,$lon"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                context.startActivity(intent)
             }
             if (index < matchingPlaces.size - 1) {
                 Spacer(Modifier.width(12.dp)) // Add spacing between items
@@ -66,3 +78,5 @@ fun WeatherSuggestionBox(
         }
     }
 }
+
+

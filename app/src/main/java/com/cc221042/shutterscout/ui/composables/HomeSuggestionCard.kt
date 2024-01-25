@@ -2,6 +2,7 @@ package com.cc221042.shutterscout.ui.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -30,7 +31,13 @@ import com.cc221042.shutterscout.R
 
 
 @Composable
-fun HomeSuggestionCard(name: String, imageUrl: String, onClick: () -> Unit){
+fun HomeSuggestionCard(
+    name: String,
+    imageUrl: String,
+    latitude: Double?,
+    longitude: Double?,
+    onClick: (Double, Double) -> Unit
+) {
 
     val imagePainter = rememberImagePainter(
         data = imageUrl,
@@ -58,6 +65,13 @@ fun HomeSuggestionCard(name: String, imageUrl: String, onClick: () -> Unit){
                     Color.LightGray,
                     shape = RoundedCornerShape(10.dp)
                 )
+                .clickable {
+                    if (latitude != null) {
+                        if (longitude != null) {
+                            onClick(latitude, longitude)
+                        }
+                    }
+                }
 
         ) {
             // Box content goes here

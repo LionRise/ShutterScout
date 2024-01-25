@@ -61,7 +61,7 @@
 
         val sunriseSunset by mainViewModel.sunriseSunset.collectAsState()
 
-            val lexend = FontFamily(Font(R.font.lexend))
+        val lexend = FontFamily(Font(R.font.lexend))
 
         val scrollState = rememberScrollState()
 
@@ -94,7 +94,7 @@
                     HomeGoldenHourBox(countdownValue)
                     Spacer(modifier = Modifier.height(20.dp))
                     WeatherCurrentBox(weatherData = weatherData)
-                    WeatherSuggestionBox(currentConditions = currentConditions , matchingPlaces = matchingPlaces)
+                    WeatherSuggestionBox(matchingPlaces = matchingPlaces)
 
                     Spacer(modifier = Modifier.height(20.dp))
 
