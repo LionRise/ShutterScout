@@ -40,8 +40,6 @@ fun HomeGoldenHourBox(countdownTime: String) {
                 shape = RoundedCornerShape(10.dp),
                 clip = true
             )
-//            .customShadowLayered(Color.Red, 0.dp, 10.dp, 10.dp)
-            //.gradientBackground(listOf(Color.Red, Color.Green), angle = 45f, 10.dp)
             .gradientBackground(
                 colors = listOf(Color(0xFFDE911D), Color(0xFFF0B429)),
 

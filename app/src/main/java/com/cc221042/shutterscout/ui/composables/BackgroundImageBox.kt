@@ -1,16 +1,16 @@
 package com.cc221042.shutterscout.ui.composables
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -23,36 +23,36 @@ import androidx.compose.ui.unit.sp
 import com.cc221042.shutterscout.R
 
 @Composable
-fun HomeBackgroundImageBox(){
-    // background image box
-    Box(modifier = Modifier
-//        .shadow(
-//            elevation = 10.dp,
-//            spotColor = Color(0x40000000),
-//            ambientColor = Color(0x40000000)
-//        )
+fun HomeBackgroundImageBox(
+    @DrawableRes backgroundImageRes: Int = R.drawable.home_background, // Default image if not provided
+    title: String = "ShutterScout"
+) {
+    val backgroundImage: Painter = painterResource(id = backgroundImageRes)
 
-        .fillMaxWidth()
-        .height(120.dp)
-        .paint(
-            painter = painterResource(R.drawable.home_background),
-            contentScale = ContentScale.FillWidth
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
     ) {
+        Image(
+            painter = backgroundImage,
+            contentDescription = null, // Decorative image does not require a content description
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
+        )
         Text(
-            text = "ShutterScout",
+            text = title,
             style = TextStyle(
                 fontSize = 32.sp,
-                lineHeight = 28.sp,
                 fontFamily = FontFamily(Font(R.font.migra_extrabold)),
-                fontWeight = FontWeight(800),
-                color = Color(0xFFF7F7F7),
-
-                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.ExtraBold,
+                color =  Color(0xFFF7F7F7),
+                textAlign = TextAlign.Start
             ),
             modifier = Modifier
-                .padding(start = 12.dp, top = 32.dp)
-
+                .fillMaxWidth()
+                .padding(top = 32.dp)
+                .padding(horizontal = 16.dp)
         )
     }
 }

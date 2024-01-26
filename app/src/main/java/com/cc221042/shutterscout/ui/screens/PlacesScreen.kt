@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +45,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -55,6 +57,9 @@ import coil.request.ImageRequest
 import com.cc221042.shutterscout.R
 import com.cc221042.shutterscout.ui.MainViewModel
 import com.cc221042.shutterscout.ui.composables.EditPlaceModal
+import com.cc221042.shutterscout.ui.composables.HomeBackgroundImageBox
+import com.cc221042.shutterscout.ui.composables.PlaceCard
+import com.cc221042.shutterscout.ui.composables.SearchBar
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,99 +90,39 @@ fun PlacesScreen(mainViewModel: MainViewModel){
         }
     }
 
+    val imagePainter = painterResource(id = R.drawable.places_background)
+
+    val imageModifier = Modifier
+        .shadow(
+            elevation = 10.dp,
+            spotColor = Color(0x40000000),
+            ambientColor = Color(0x40000000)
+        )
+        .width(361.dp)
+        .height(120.dp)
+
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().background(Color.White)
-    ) {
+    )
+    {
         item {
-            TextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Search") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .shadow(
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(10.dp),
-                        clip = true
-                    )
-                    .background(
-                        color = Color(0xFFF6F6F6),
-                        shape = RoundedCornerShape(size = 10.dp)
-                    ),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.LightGray, // Background color of the TextField
-                    focusedIndicatorColor = Color.Transparent, // Color of the indicator below the TextField when focused
-                    unfocusedIndicatorColor = Color.Transparent, // Color of the indicator below the TextField when not focused
-                )
-            )
-            Text(
-                text = "Your saved Places",
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                style = TextStyle(fontFamily = lexend),
-                color = Color(0xFF565656),
-                modifier = Modifier.padding(16.dp)
+            HomeBackgroundImageBox(
+                backgroundImageRes = R.drawable.places_background,
+                title = "Places"
             )
         }
 
-        items(state.value.places, key = { it.id }) { place -> // Assuming Place has an id field
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clickable { mainViewModel.editPlace(place) },
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 10.dp
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = place.title,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    )
-                    Text(
-                        text = place.condition,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp
-                        )
-                    )
-                    // langitude and longitude
-                    Text(
-                        text = "lat: ${place.latitude}, lon: ${place.longitude}",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp
-                        )
-                    )
-                    AsyncImage(
-                        modifier = Modifier
-                            .size(250.dp),
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(place.imageUri)
-                            .crossfade(enable = true)
-                            .build(),
-                        contentDescription = "Place Image",
-                        contentScale = ContentScale.Crop,
-                    )
-                    // Add a Spacer to create some space between text and the delete button
-                    Spacer(modifier = Modifier.height(8.dp))
-                    // IconButton for delete action
-                    IconButton(onClick = { mainViewModel.deleteButton(place)}) {
-                        Icon(Icons.Default.Delete,"Delete")
-                    }
-                }
-            }
+        item {
+            SearchBar(
+                searchQuery = searchQuery,
+                onSearchQueryChanged = { searchQuery = it }
+            )
+        }
+
+        items(state.value.places, key = { it.id }) { place ->
+            PlaceCard(place = place, mainViewModel = mainViewModel)
         }
     }
 
