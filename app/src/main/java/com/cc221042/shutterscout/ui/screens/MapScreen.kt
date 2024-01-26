@@ -1,34 +1,38 @@
 package com.cc221042.shutterscout.ui.screens
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
-import androidx.compose.ui.graphics.Color
-import android.graphics.Paint
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toDrawable
 import com.cc221042.shutterscout.Place
 import com.cc221042.shutterscout.R
-import com.cc221042.shutterscout.ui.MapViewModel
 import kotlinx.coroutines.flow.StateFlow
 import org.osmdroid.config.Configuration
 import org.osmdroid.views.MapView
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
-import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
+
+// Function to get a drawable from the icon name
+fun getMarkerIcon(context: Context, iconName: String): Drawable? {
+    // Convert the iconName to a drawable resource ID
+    val resourceId = when (iconName) {
+        "star" -> R.drawable.ic_star // Replace with actual drawable resource IDs
+        "heart" -> R.drawable.ic_heart
+        "mountain" -> R.drawable.mountain
+        "building" -> R.drawable.building
+        "tree" -> R.drawable.tree
+        "university" -> R.drawable.university
+        "water" -> R.drawable.water
+        // Add more mappings as needed
+        else -> R.drawable.ic_default_marker // Default marker icon
+    }
+    // Return the drawable
+    return ContextCompat.getDrawable(context, resourceId)
+}
+
 @Composable
 fun MapScreen(places: StateFlow<List<Place>>) {
     val placesList by places.collectAsState()
@@ -45,10 +49,7 @@ fun MapScreen(places: StateFlow<List<Place>>) {
                 placesList.filter { place -> place.latitude != null && place.longitude != null }.forEach { place ->
                     marker.position = GeoPoint(place.latitude!!, place.longitude!!)
                     marker.title = place.title // Set the title of the place
-                    //marker.image = context.getDrawable(R.drawable.thumbtack)
-                    //marker.icon = getDrawable(R.drawable.thumbtack)
-                    marker.image = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_launcher_foreground, null)
-                    //marker.icon = getIconDrawable(context, place.icon) // Custom function to get drawable
+                    marker.icon = getMarkerIcon(context, place.icon) // Set the custom icon
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     overlays.add(marker)
                 }
@@ -60,6 +61,7 @@ fun MapScreen(places: StateFlow<List<Place>>) {
                 val marker = Marker(mapView)
                 marker.position = GeoPoint(place.latitude!!, place.longitude!!)
                 marker.title = place.title // Set the title of the place
+                marker.icon = getMarkerIcon(mapView.context, place.icon) // Set the custom icon
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 mapView.overlays.add(marker)
             }
@@ -75,5 +77,6 @@ private fun getIconDrawable(context: Context, iconName: String): Drawable? {
         ContextCompat.getDrawable(context, resourceId)
     } else {
         // Fallback drawable or null if no drawable should be used in case of error
-        ContextCompat.getDrawable(context, R.drawable.thumbtack)
-    }}
+        ContextCompat.getDrawable(context, R.drawable.ic_default_marker)
+    }
+}
