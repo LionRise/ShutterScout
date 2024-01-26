@@ -62,7 +62,7 @@ fun MapScreen(places: StateFlow<List<Place>>) {
                 marker.position = GeoPoint(place.latitude!!, place.longitude!!)
                 marker.title = place.title // Set the title of the place
                 marker.icon = getMarkerIcon(mapView.context, place.icon) // Set the custom icon
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP)
                 mapView.overlays.add(marker)
             }
             mapView.invalidate()
